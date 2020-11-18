@@ -23,13 +23,8 @@ enum Type {
 	MOON,
 }
 
-enum SatelliteSeparation {
-	MIN = 750,
-	MAX = 7_500,
-}
-
 ################################################################# CONSTANTS ##############################################################
-const GRAV := 6.6743 * pow(10, -4)	# This is gravitational constant adjusted to numbers in game
+#const GRAV := 6.6743 * pow(10, -4)	# This is gravitational constant adjusted to numbers in game
 const SATELLITES_MASS_FACTOR := 0.1	# Total mass of all satellites around star or planet cannot exceed 10% mass of main body.
 
 
@@ -88,7 +83,20 @@ func _physics_process(delta: float) -> void:
 	orbital_movement(delta)
 
 
+func _process(delta: float) -> void:
+	for node in get_tree().get_nodes_in_group(Const.OOT_PROCESSING_GROUP):
+		node.call(Const.OOT_PROCESSING_FUNC, delta)
+
+
 ################################################################# PUBLIC METHODS #########################################################
+# Put inside oot_processing function evertything you want to process if this scene isn't inside Scene Tree
+func oot_processing(delta: float) -> void:
+	if is_inside_tree():
+		return
+	
+	orbital_movement(delta)
+
+
 func get_type_as_str() -> String:
 	var result := ""
 	

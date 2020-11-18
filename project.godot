@@ -39,6 +39,7 @@ config/icon="res://icon.png"
 
 [autoload]
 
+Const="*res://src/Autoloads/Constants.gd"
 Func="*res://src/Autoloads/Functions.gd"
 
 [display]

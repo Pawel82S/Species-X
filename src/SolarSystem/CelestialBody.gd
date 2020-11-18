@@ -11,6 +11,7 @@ enum Zone {
 	COLD,
 	OUTER
 }
+
 ################################################################# CONSTANTS ##############################################################
 const PLANETS_CLASSES := "ABCDEFGHIJKLMNOPQRSTXY"
 const DATA := {	# Most likely this should be in JSON file
@@ -143,10 +144,19 @@ const DATA := {	# Most likely this should be in JSON file
 ################################################################# SETTERS & GETTERS ######################################################
 ################################################################# BUILT-IN METHODS #######################################################
 func _ready() -> void:
+	print(is_in_group(Const.OOT_PROCESSING_GROUP))
 	type = Type.PLANET
 
 
 ################################################################# PUBLIC METHODS #########################################################
+# Put inside oot_processing function evertything you want to process if this scene isn't inside Scene Tree
+func oot_processing(delta: float) -> void:
+	if is_inside_tree():
+		return
+	
+	.oot_processing(delta)	# First we call base class function
+
+
 func generate(body_type: int, zone: int, max_mass: int) -> void:
 	assert(body_type == Type.PLANET || body_type == Type.MOON, "Invalid body type: %d" % body_type)
 	assert(zone in Zone.values(), "Invalid zone %d" % zone)
@@ -163,8 +173,8 @@ func generate(body_type: int, zone: int, max_mass: int) -> void:
 func _get_random_class_in_zone(zone: int) -> String:
 	assert(zone in Zone.values(), "Unknown zone type: %d" % zone)
 	var class_pool := []
-	for body_class in DATA["Zone"]:
-		if zone in DATA["Zone"][body_class] && type in DATA["Type"][body_class]:
+	for body_class in DATA.Zone:
+		if zone in DATA.Zone[body_class] && type in DATA.Type[body_class]:
 			class_pool.append(body_class)
 	
 	return class_pool[randi() % class_pool.size()] if class_pool.size() > 0 else ""

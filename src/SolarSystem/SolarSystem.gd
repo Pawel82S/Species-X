@@ -15,31 +15,47 @@ Earth is 1 AU from the Sun which is avarge distance of 150Mkm. This distance is 
 """
 ################################################################# SIGNALS ################################################################
 ################################################################# ENUMS ##################################################################
-enum SatelliteSeparation {
-	MIN = 750,
-	MAX = 7500
+enum PlanetSeparation {
+	MIN = 4000,
+	MAX = 8000
 }
+
+enum MoonSeparation {
+	MIN
+	MAX
+}
+
 ################################################################# CONSTANTS ##############################################################
 const AU := 15_000	# Length of 1 AU 
 const OUTER_ZONE_SIZE := AU * 20	# This is zone where Pluto is and other objects of outer solar system
 const ECO_ZONE_FACTOR := 4.55
 const COLD_ZONE_END_FACTOR := 81.8
+const MIN_PLANET_MASS := 0	# This is minimum mass a planet can have
+const MIN_MOON_MASS := 0
 const SCN_STAR := preload("res://src/SolarSystem/Star.tscn")
 const SCN_BODY := preload("res://src/SolarSystem/CelestialBody.tscn")
-
 
 ################################################################# EXPORT VAR #############################################################
 ################################################################# PUBLIC VAR #############################################################
 ################################################################# PRIVATE VAR ############################################################
-var _hot_zone_begin := 0	# Is starting where sun surface ends
-var _hot_zone_end := 0
-var _eco_zone_begin := 0	# Is starting where hot zone is ending + 1
-var _eco_zone_end := 0
-var _cold_zone_begin := 0	# Is starting where eco zone is ending + 1
-var _cold_zone_end := 0
-var _outer_zone_begin := 0	# Is starting wher cold zone is ending + 1
-var _outer_zone_end := 0	# Is also radius of whole system
-
+var zone_range = {
+		CelestialBody.Zone.HOT: {
+				"Begin": 0,
+				"End": 0
+			},
+		CelestialBody.Zone.ECO: {
+				"Begin": 0,
+				"End": 0
+			},
+		CelestialBody.Zone.COLD: {
+				"Begin": 0,
+				"End": 0
+			},
+		CelestialBody.Zone.OUTER: {
+				"Begin": 0,
+				"End": 0
+			}
+	}
 
 ################################################################# ONREADY VAR ############################################################
 onready var celestial_bodies := $CelestialBodies
@@ -53,27 +69,29 @@ func _ready() -> void:
 
 ################################################################# PUBLIC METHODS #########################################################
 func generate() -> void:
-	var star := SCN_STAR.instance()
+	var star: Star = SCN_STAR.instance()
 	celestial_bodies.add_child(star)
 	star.generate()
+	var mass_for_planets := star.get_max_satellites_mass()
 	_calculate_zones()
-	var separation := Func.randi_from_range(SatelliteSeparation.MIN, SatelliteSeparation.MAX)
-	var orbit_height: int = star.body_radius + separation
-	var planet := SCN_BODY.instance()
-	star.add_satellite(planet)
-	var current_zone: int = CelestialBody.Zone.COLD
-	var max_mass := 1
-	planet.generate(CelestialBody.Type.PLANET, current_zone, max_mass)
-	planet.orbit = orbit_height
+	
+#	while mass_for_planets > MIN_PLANET_MASS:
+#		var planet := _generate_planet(mass_for_planets)
+#		mass_for_planets -= planet.body_mass
+#		var mass_for_moons := planet.get_max_satellites_mass()
+#
+#		while mass_for_moons > MIN_MOON_MASS:
+#			var moon := _generate_moon(mass_for_moons)
+#			mass_for_moons -= moon.body_mass
 
 
 # If system has special star, then radius is equal to hot zone end
 func get_radius() -> int:
 	var star: Star = celestial_bodies.get_child(0)
 	if star.subtype == star.SubType.NORMAL:
-		return _outer_zone_end
+		return zone_range[CelestialBody.Zone.OUTER].End
 	else:
-		return _hot_zone_end
+		return zone_range[CelestialBody.Zone.HOT].End
 
 
 ################################################################# PRIVATE METHODS ########################################################
@@ -82,11 +100,22 @@ func _calculate_zones() -> void:
 	assert(star, "System %s does not have any stars." % name)
 	var star_eco_factor := ECO_ZONE_FACTOR * star.temperature
 	var half_star_eco_factor := star_eco_factor / 2
-	_eco_zone_begin = int(star_eco_factor - half_star_eco_factor + star.body_radius)
-	_eco_zone_end = int(star_eco_factor + half_star_eco_factor + star.body_radius)
-	_hot_zone_begin = star.body_radius + 1
-	_hot_zone_end = _eco_zone_begin - 1
-	_cold_zone_begin = _eco_zone_end + 1
-	_cold_zone_end = int(COLD_ZONE_END_FACTOR * star.temperature)
-	_outer_zone_begin = _cold_zone_end + 1
-	_outer_zone_end = _outer_zone_begin + OUTER_ZONE_SIZE
+	zone_range[CelestialBody.Zone.ECO].Begin = int(star_eco_factor - half_star_eco_factor + star.body_radius)
+	zone_range[CelestialBody.Zone.ECO].End = int(star_eco_factor + half_star_eco_factor + star.body_radius)
+	zone_range[CelestialBody.Zone.HOT].Begin = star.body_radius + 1
+	zone_range[CelestialBody.Zone.HOT].End = zone_range[CelestialBody.Zone.ECO].Begin - 1
+	zone_range[CelestialBody.Zone.COLD].Begin = zone_range[CelestialBody.Zone.ECO].End + 1
+	zone_range[CelestialBody.Zone.COLD].End = int(COLD_ZONE_END_FACTOR * star.temperature)
+	zone_range[CelestialBody.Zone.OUTER].Begin = zone_range[CelestialBody.Zone.COLD].End + 1
+	zone_range[CelestialBody.Zone.OUTER].End = zone_range[CelestialBody.Zone.OUTER].Begin + OUTER_ZONE_SIZE
+
+
+func _generate_planet(max_mass: int) -> CelestialBody:
+	var planet: CelestialBody = SCN_BODY.instance()
+	return planet
+
+
+func _generate_moon(max_mass: int) -> CelestialBody:
+	var moon: CelestialBody = SCN_BODY.instance()
+	moon.type = CelestialBody.Type.MOON
+	return moon

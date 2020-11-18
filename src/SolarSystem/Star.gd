@@ -114,6 +114,14 @@ func _ready() -> void:
 
 
 ################################################################# PUBLIC METHODS #########################################################
+# Put inside oot_processing function evertything you want to process if this scene isn't inside Scene Tree
+func oot_processing(delta: float) -> void:
+	if is_inside_tree():
+		return
+	
+	.oot_processing(delta)	# First we call base class function
+
+
 func get_type_as_str() -> String:
 	var result := ""
 	
@@ -173,27 +181,27 @@ func _generate_normal_star() -> void:
 
 
 func _generate_magnetar_star() -> void:
-	sprite.texture = DATA["Texture"]["Magnetar"]
-	sprite.self_modulate = DATA["Modulation"]["Magnetar"]
-	description = DATA["Description"]["Magnetar"]
+	sprite.texture = DATA.Texture.Magnetar
+	sprite.self_modulate = DATA.Modulation.Magnetar
+	description = DATA.Description.Magnetar
 	# This is neutron star so we will use generic neutron star generation code for now
 	_generate_neutron_star()
 	print("Magnetar star generation not implemented")
 
 
 func _generate_pulsar_star() -> void:
-	sprite.texture = DATA["Texture"]["Pulsar"]
-	sprite.self_modulate = DATA["Modulation"]["Pulsar"]
-	description = DATA["Description"]["Pulsar"]
+	sprite.texture = DATA.Texture.Pulsar
+	sprite.self_modulate = DATA.Modulation.Pulsar
+	description = DATA.Description.Pulsar
 	# This is neutron star so we will use generic neutron star generation code for now
 	_generate_neutron_star()
 	print("Pulsar star generation not implemented")
 
 
 func _generate_magnetar_pulsar() -> void:
-	sprite.texture = DATA["Texture"]["MagnetarPulsar"]
-	sprite.self_modulate = DATA["Modulation"]["MagnetarPulsar"]
-	description = DATA["Description"]["MagnetarPulsar"]
+	sprite.texture = DATA.Texture.MagnetarPulsar
+	sprite.self_modulate = DATA.Modulation.MagnetarPulsar
+	description = DATA.Description.MagnetarPulsar
 	# This is neutron star so we will use generic neutron star generation code for now
 	_generate_neutron_star()
 	print("Magnetar + Pulsar star generation not implemented")
@@ -210,18 +218,18 @@ func _generate_neutron_star() -> void:
 
 
 func _generate_black_hole() -> void:
-	sprite.texture = DATA["Texture"]["BlackHole"]
-	sprite.self_modulate = DATA["Modulation"]["BlackHole"]
-	description = DATA["Description"]["BlackHole"]
+	sprite.texture = DATA.Texture.BlackHole
+	sprite.self_modulate = DATA.Modulation.BlackHole
+	description = DATA.Description.BlackHole
 	# Size of stars is dependent on their body_mass (bigger body_mass, bigger star)
 #	self.body_radius = range_lerp(body_mass, min_mass, max_mass, DEFAULT_SUN_RADIUS * 1.4, DEFAULT_SUN_RADIUS * 1.8)
 	print("Black hole generation not implemented")
 
 
 func _generate_star_a() -> void:
-	sprite.texture = DATA["Texture"]["A"]
-	sprite.self_modulate = DATA["Modulation"]["A"]
-	description = DATA["Description"]["A"]
+	sprite.texture = DATA.Texture.A
+	sprite.self_modulate = DATA.Modulation.A
+	description = DATA.Description.A
 	temperature = Func.celsius_from_kelvin(Func.randi_from_range(7_500, 10_000))
 	var min_mass := DEFAULT_SUN_MASS * 1.4
 	var max_mass := DEFAULT_SUN_MASS * 2.1
@@ -232,9 +240,9 @@ func _generate_star_a() -> void:
 
 
 func _generate_star_b() -> void:
-	sprite.texture = DATA["Texture"]["B"]
-	sprite.self_modulate = DATA["Modulation"]["B"]
-	description = DATA["Description"]["B"]
+	sprite.texture = DATA.Texture.B
+	sprite.self_modulate = DATA.Modulation.B
+	description = DATA.Description.B
 	temperature = Func.celsius_from_kelvin(Func.randi_from_range(10_000, 30_000))
 	var min_mass := DEFAULT_SUN_MASS * 2.1
 	var max_mass := DEFAULT_SUN_MASS * 16
@@ -245,9 +253,9 @@ func _generate_star_b() -> void:
 
 
 func _generate_star_f() -> void:
-	sprite.texture = DATA["Texture"]["F"]
-	sprite.self_modulate = DATA["Modulation"]["F"]
-	description = DATA["Description"]["F"]
+	sprite.texture = DATA.Texture.F
+	sprite.self_modulate = DATA.Modulation.F
+	description = DATA.Description.F
 	temperature = Func.celsius_from_kelvin(Func.randi_from_range(7_500, 10_000))
 	var min_mass := DEFAULT_SUN_MASS * 1.04
 	var max_mass := DEFAULT_SUN_MASS * 1.4
@@ -258,9 +266,9 @@ func _generate_star_f() -> void:
 
 
 func _generate_star_g() -> void:
-	sprite.texture = DATA["Texture"]["G"]
-	sprite.self_modulate = DATA["Modulation"]["G"]
-	description = DATA["Description"]["G"]
+	sprite.texture = DATA.Texture.G
+	sprite.self_modulate = DATA.Modulation.G
+	description = DATA.Description.G
 	temperature = Func.celsius_from_kelvin(Func.randi_from_range(6_000, 7_500))
 	var min_mass := DEFAULT_SUN_MASS * 0.8
 	var max_mass := DEFAULT_SUN_MASS * 1.04
@@ -271,9 +279,9 @@ func _generate_star_g() -> void:
 
 
 func _generate_star_k() -> void:
-	sprite.texture = DATA["Texture"]["K"]
-	sprite.self_modulate = DATA["Modulation"]["K"]
-	description = DATA["Description"]["K"]
+	sprite.texture = DATA.Texture.K
+	sprite.self_modulate = DATA.Modulation.K
+	description = DATA.Description.K
 	temperature = Func.celsius_from_kelvin(Func.randi_from_range(3_700, 5_200))
 	var min_mass := DEFAULT_SUN_MASS * 0.45
 	var max_mass := DEFAULT_SUN_MASS * 0.8
@@ -284,9 +292,9 @@ func _generate_star_k() -> void:
 
 
 func _generate_star_m() -> void:
-	sprite.texture = DATA["Texture"]["M"]
-	sprite.self_modulate = DATA["Modulation"]["M"]
-	description = DATA["Description"]["M"]
+	sprite.texture = DATA.Texture.M
+	sprite.self_modulate = DATA.Modulation.M
+	description = DATA.Description.M
 	temperature = Func.celsius_from_kelvin(Func.randi_from_range(2_400, 3_700))
 	var min_mass := DEFAULT_SUN_MASS * 0.08
 	var max_mass := DEFAULT_SUN_MASS * 0.45
@@ -298,9 +306,9 @@ func _generate_star_m() -> void:
 
 
 func _generate_star_o() -> void:
-	sprite.texture = DATA["Texture"]["O"]
-	sprite.self_modulate = DATA["Modulation"]["O"]
-	description = DATA["Description"]["O"]
+	sprite.texture = DATA.Texture.O
+	sprite.self_modulate = DATA.Modulation.O
+	description = DATA.Description.O
 	temperature = Func.celsius_from_kelvin(Func.randi_from_range(30_000, 52_000))
 	var min_mass := DEFAULT_SUN_MASS * 16
 	# Maximum (50) is just pure guess, because nowhere in Wikipedia is written how many times massive can be this subtype of star. They say
