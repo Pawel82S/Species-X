@@ -1,0 +1,95 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://src/GUI/MainMenu.gd" type="Script" id=1]
+
+[node name="MainMenu" type="CenterContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ButtonsContainer" type="VBoxContainer" parent="."]
+margin_left = 806.0
+margin_top = 398.0
+margin_right = 890.0
+margin_bottom = 556.0
+alignment = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="ButtonsContainer"]
+margin_top = 36.0
+margin_right = 84.0
+margin_bottom = 50.0
+text = "Main Menu"
+align = 1
+valign = 1
+
+[node name="ResumeButton" type="Button" parent="ButtonsContainer"]
+visible = false
+margin_top = 18.0
+margin_right = 84.0
+margin_bottom = 38.0
+button_mask = 3
+text = "Resume"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="NewButton" type="Button" parent="ButtonsContainer"]
+margin_top = 54.0
+margin_right = 84.0
+margin_bottom = 74.0
+button_mask = 3
+text = "New Game"
+
+[node name="SaveButton" type="Button" parent="ButtonsContainer"]
+visible = false
+margin_top = 54.0
+margin_right = 84.0
+margin_bottom = 74.0
+button_mask = 3
+text = "Save Game"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="LoadButton" type="Button" parent="ButtonsContainer"]
+visible = false
+margin_top = 66.0
+margin_right = 84.0
+margin_bottom = 86.0
+button_mask = 3
+text = "Load Game"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="SettingsButton" type="Button" parent="ButtonsContainer"]
+margin_top = 78.0
+margin_right = 84.0
+margin_bottom = 98.0
+button_mask = 3
+text = "Settings"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="QuitButton" type="Button" parent="ButtonsContainer"]
+margin_top = 102.0
+margin_right = 84.0
+margin_bottom = 122.0
+button_mask = 3
+text = "Quit"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+[connection signal="pressed" from="ButtonsContainer/ResumeButton" to="." method="_on_ResumeButton_pressed"]
+[connection signal="pressed" from="ButtonsContainer/NewButton" to="." method="_on_NewButton_pressed"]
+[connection signal="pressed" from="ButtonsContainer/SaveButton" to="." method="_on_SaveButton_pressed"]
+[connection signal="pressed" from="ButtonsContainer/LoadButton" to="." method="_on_LoadButton_pressed"]
+[connection signal="pressed" from="ButtonsContainer/SettingsButton" to="." method="_on_SettingsButton_pressed"]
+[connection signal="pressed" from="ButtonsContainer/QuitButton" to="." method="_on_QuitButton_pressed"]
