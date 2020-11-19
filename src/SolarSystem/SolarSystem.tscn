@@ -9,3 +9,4 @@ script = ExtResource( 1 )
 [node name="CelestialBodies" type="Node2D" parent="."]
 
 [node name="Camera2D" parent="." instance=ExtResource( 2 )]
+[connection signal="visibility_changed" from="." to="." method="_on_SolarSystem_visibility_changed"]

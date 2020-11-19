@@ -17,30 +17,26 @@ to mass of moons in relation to mass of planets they will be orbiting.
 """
 ################################################################# SIGNALS ################################################################
 ################################################################# ENUMS ##################################################################
-enum Type {
+enum ObjectType {
 	STAR,
 	PLANET,
 	MOON,
 }
 
 ################################################################# CONSTANTS ##############################################################
-#const GRAV := 6.6743 * pow(10, -4)	# This is gravitational constant adjusted to numbers in game
 const SATELLITES_MASS_FACTOR := 0.1	# Total mass of all satellites around star or planet cannot exceed 10% mass of main body.
 
 
 ################################################################# EXPORT VAR #############################################################
-#export (Type) var type: int = Type.STAR setget set_type
-var type: int = Type.STAR setget set_type
-
-
 ################################################################# PUBLIC VAR #############################################################
-var orbit := 0 setget set_orbit
-var body_radius := 1 setget set_body_radius
-var body_mass := 0
-var rotation_speed := 0.0 setget set_rotation_speed
-var temperature := 0.0	# in celsius
-var description := ""
-var user_comment := ""
+var object_type: int = ObjectType.STAR setget set_object_type
+var object_orbit := 0 setget set_object_orbit
+var object_radius := 1 setget set_object_radius
+var object_mass := 1 setget set_object_mass
+var object_rotation_speed := 0.0 setget set_object_rotation_speed
+var object_temperature := 0.0	# in celsius
+var object_description := ""
+var object_user_comment := ""
 
 
 ################################################################# PRIVATE VAR ############################################################
@@ -52,64 +48,57 @@ onready var satellites := $StaticBody2D/Satellites
 
 
 ################################################################# SETTERS & GETTERS ######################################################
-func set_body_radius(val: int) -> void:
-	assert(val > 0, "Body radius must be greater than 0 (%d)" % val)
-	body_radius = val
-	collision_shape.shape.radius = body_radius
+func set_object_type(val:int) -> void:
+	assert(val in ObjectType.values(), "Invalid object type: %d" % val)
+	object_type = val
+	satellites.visible = false if val == ObjectType.MOON else true
+
+
+func set_object_radius(val: int) -> void:
+	assert(val > 0, "Object radius must be greater than 0 (%d)" % val)
+	object_radius = val
+	collision_shape.shape.radius = object_radius
 	_rescale_sprite()
 
 
-func set_type(val:int) -> void:
-	assert(val in Type.values(), "Invalid body type: %d" % val)
-	type = val
-	satellites.visible = false if val == Type.MOON else true
+func set_object_mass(val: int) -> void:
+	assert(val > 0, "System Objects must have mass greater than 0. You entered: %d" % val)
+	object_mass = val
 
 
-func set_orbit(val: int) -> void:
+func set_object_orbit(val: int) -> void:
 	assert(val >= 0, "Orbit height cannot have negative value: %d" % val)
+	object_orbit = val
 	body.position.x = val
 
 
-func set_rotation_speed(val: float) -> void:
-	rotation_speed = val
+func set_object_rotation_speed(val: float) -> void:
+	object_rotation_speed = val
 
 
 ################################################################# BUILT-IN METHODS #######################################################
 func _ready() -> void:
-	set_body_radius(body_radius)
+	set_object_radius(object_radius)
 
 
 func _physics_process(delta: float) -> void:
 	orbital_movement(delta)
 
 
-func _process(delta: float) -> void:
-	for node in get_tree().get_nodes_in_group(Const.OOT_PROCESSING_GROUP):
-		node.call(Const.OOT_PROCESSING_FUNC, delta)
-
-
 ################################################################# PUBLIC METHODS #########################################################
-# Put inside oot_processing function evertything you want to process if this scene isn't inside Scene Tree
-func oot_processing(delta: float) -> void:
-	if is_inside_tree():
-		return
-	
-	orbital_movement(delta)
-
-
-func get_type_as_str() -> String:
+func get_object_type_as_str() -> String:
 	var result := ""
 	
-	match type:
-		Type.STAR: result = "star"
-		Type.PLANET: result = "planet"
-		Type.MOON: result = "moon"
+	match object_type:
+		ObjectType.STAR: result = "star"
+		ObjectType.PLANET: result = "planet"
+		ObjectType.MOON: result = "moon"
 	
 	return result
 
 
 func orbital_movement(delta: float) -> void:
-	rotation += rotation_speed * delta
+	rotation += object_rotation_speed * delta
 	body.rotation = -rotation
 
 
@@ -118,7 +107,7 @@ func can_have_satellites() -> bool:
 
 
 func add_satellite(sat: SystemObject) -> void:
-	assert(can_have_satellites(), "Celestial bodies of type %s cannot have sattelites" % get_type_as_str())
+	assert(can_have_satellites(), "System Objects of type %s cannot have sattelites" % get_object_type_as_str())
 	satellites.add_child(sat)
 
 
@@ -127,12 +116,12 @@ func get_satellites() -> Array:
 
 
 func get_max_satellites_mass() -> float:
-	return body_mass * SATELLITES_MASS_FACTOR
+	return object_mass * SATELLITES_MASS_FACTOR
 
 
 ################################################################# PRIVATE METHODS ########################################################
 func _rescale_sprite() -> void:
-	var body_diameter := body_radius * 2.0
+	var body_diameter := object_radius * 2.0
 	var scale_width: float = body_diameter / sprite.texture.get_width()
 	var scale_height: float = body_diameter / sprite.texture.get_height()
 	sprite.scale = Vector2(scale_width, scale_height)

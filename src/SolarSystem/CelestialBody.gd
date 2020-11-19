@@ -12,8 +12,21 @@ enum Zone {
 	OUTER
 }
 
+enum Radius {
+	REAL_MIN = 50,
+	REAL_MAX = 20_000,
+	GAME_MIN = 25,
+	GAME_MAX = 256
+}
+
+enum PlanetMass {
+	MIN = 455_000,
+	MAX = 4_659_200
+}
+
 ################################################################# CONSTANTS ##############################################################
-const PLANETS_CLASSES := "ABCDEFGHIJKLMNOPQRSTXY"
+const PLANETS_CLASSES := "ABCDEFGHIJKLMNOPQRXY"
+const RADIUS_TO_MASS_FACTOR := 18_200
 const DATA := {	# Most likely this should be in JSON file
 		"Texture": {
 			"A": preload("res://icon.png"),
@@ -34,8 +47,6 @@ const DATA := {	# Most likely this should be in JSON file
 			"P": preload("res://icon.png"),
 			"Q": preload("res://icon.png"),
 			"R": preload("res://icon.png"),
-			"S": preload("res://icon.png"),
-			"T": preload("res://icon.png"),
 			"X": preload("res://icon.png"),
 			"Y": preload("res://icon.png")
 		},
@@ -58,8 +69,6 @@ const DATA := {	# Most likely this should be in JSON file
 			"P": Color.greenyellow,
 			"Q": Color.greenyellow,
 			"R": Color.greenyellow,
-			"S": Color.greenyellow,
-			"T": Color.greenyellow,
 			"X": Color.greenyellow,
 			"Y": Color.greenyellow
 		},
@@ -82,34 +91,30 @@ const DATA := {	# Most likely this should be in JSON file
 			"P": 'Any planet whose surface is more than 80% frozen is considered class P. These glaciated worlds are typically very cold, with temperatures rarely exceeding the freezing point. Though not prime conditions for life, hearty plants and animals are not uncommon, and some species, such as the Aenar and the Andorians, have evolved on class P worlds.',
 			"Q": 'These rare planetoids typically develop with a highly eccentric orbit, or near stars with a variable output. As such, conditions on the planet’s surface are widely varied. Deserts and rain forests exist within a few kilometers of each other, while glaciers can simultaneously lie very near the equator. Given the constant instability, is virtually impossible for life to exist on class-Q worlds.',
 			"R": 'A class R planet usually forms within a star system, but at some point in its evolution, the planet is expelled, likely the result of a catastrophic asteroid impact. The shift radically changes the planet’s evolution; many planets merely die, but geologically active planets can sustain a habitable surface via volcanic outgassing and geothermal venting.',
-			"S": 'Aside from their immense size, Class S planets are very similar to their Class J counterparts, with liquid metallic hydrogen cores surrounded by a hydrogen and helium atmosphere.',
-			"T": 'Class T planets represent the upper limits of planetary masses. Most exist within a star system’s cold zone and are very similar to class S and J planets. However, class t planets occasionally form within a star system’s hot zone. If they are sufficiently massive (13 times more massive than Jupiter), deuterium ignites nuclear fusion within the core, and the planet becomes a red dwarf star, creating a binary star system.',
 			"X": 'Class X planets are the result of a failed class T planet in a star system’s hot zone. Instead of becoming a gas giant or red dwarf star, a class x planet was stripped of its hydrogen/ helium atmosphere. The result is a small, barren world similar to a class b planet, but with no atmosphere and an extremely dense, metal-rich core',
 			"Y": 'Perhaps the most environmentally unfriendly planets in the galaxy, class Y planets are toxic to life in every way imaginable. The atmosphere is saturated with toxic radiation, temperatures are extreme, and atmospheric storms are amongst the most severe in the galaxy, with winds in excess of 500 kph.'
 		},
-		"Type": {	# Body class can be Planet or Moon. Here we detemine what type of body can it be.
-			"A": [Type.PLANET, Type.MOON],
-			"B": [Type.PLANET, Type.MOON],
-			"C": [Type.PLANET, Type.MOON],
-			"D": [Type.MOON],
-			"E": [Type.PLANET],
-			"F": [Type.PLANET],
-			"G": [Type.PLANET],
-			"H": [Type.PLANET],
-			"I": [Type.PLANET],
-			"J": [Type.PLANET],
-			"K": [Type.PLANET, Type.MOON],
-			"L": [Type.PLANET],
-			"M": [Type.PLANET],
-			"N": [Type.PLANET],
-			"O": [Type.PLANET],
-			"P": [Type.PLANET],
-			"Q": [Type.PLANET, Type.MOON],
-			"R": [Type.PLANET, Type.MOON],
-			"S": [Type.PLANET],
-			"T": [Type.PLANET],
-			"X": [Type.PLANET, Type.MOON],
-			"Y": [Type.PLANET]
+		"ObjectType": {	# Body class can be Planet or Moon. Here we detemine what type of body can it be.
+			"A": [ObjectType.PLANET, ObjectType.MOON],
+			"B": [ObjectType.PLANET, ObjectType.MOON],
+			"C": [ObjectType.PLANET, ObjectType.MOON],
+			"D": [ObjectType.MOON],
+			"E": [ObjectType.PLANET],
+			"F": [ObjectType.PLANET],
+			"G": [ObjectType.PLANET],
+			"H": [ObjectType.PLANET],
+			"I": [ObjectType.PLANET],
+			"J": [ObjectType.PLANET],
+			"K": [ObjectType.PLANET, ObjectType.MOON],
+			"L": [ObjectType.PLANET],
+			"M": [ObjectType.PLANET],
+			"N": [ObjectType.PLANET],
+			"O": [ObjectType.PLANET],
+			"P": [ObjectType.PLANET],
+			"Q": [ObjectType.PLANET, ObjectType.MOON],
+			"R": [ObjectType.PLANET, ObjectType.MOON],
+			"X": [ObjectType.PLANET, ObjectType.MOON],
+			"Y": [ObjectType.PLANET]
 		},
 		"Zone": {
 			"A": [Zone.ECO, Zone.COLD],
@@ -130,10 +135,30 @@ const DATA := {	# Most likely this should be in JSON file
 			"P": [Zone.ECO],
 			"Q": [Zone.HOT, Zone.ECO, Zone.COLD],
 			"R": [Zone.OUTER],
-			"S": [Zone.COLD],
-			"T": [Zone.COLD],
 			"X": [Zone.HOT],
 			"Y": [Zone.HOT, Zone.ECO, Zone.COLD]
+		},
+		"PlanetRadius": {
+			"A": { "Min": 500, "Max": 5000 },
+			"B": { "Min": 500, "Max": 5000 },
+			"C": { "Min": 500, "Max": 5000 },
+			"D": { "Min": 50, "Max": 2000 },
+			"E": { "Min": 5000, "Max": 7500 },
+			"F": { "Min": 5000, "Max": 7500 },
+			"G": { "Min": 5000, "Max": 7500 },
+			"H": { "Min": 4000, "Max": 7500 },
+			"I": { "Min": 10000, "Max": 15000 },
+			"J": { "Min": 15000, "Max": 20000 },
+			"K": { "Min": 2500, "Max": 5000 },
+			"L": { "Min": 5000, "Max": 7500 },
+			"M": { "Min": 5000, "Max": 7500 },
+			"N": { "Min": 5000, "Max": 7500 },
+			"O": { "Min": 5000, "Max": 7500 },
+			"P": { "Min": 5000, "Max": 7500 },
+			"Q": { "Min": 2000, "Max": 7500 },
+			"R": { "Min": 2000, "Max": 7500 },
+			"X": { "Min": 500, "Max": 5000 },
+			"Y": { "Min": 5000, "Max": 7500 },
 		}
 	}
 
@@ -144,37 +169,70 @@ const DATA := {	# Most likely this should be in JSON file
 ################################################################# SETTERS & GETTERS ######################################################
 ################################################################# BUILT-IN METHODS #######################################################
 func _ready() -> void:
-	print(is_in_group(Const.OOT_PROCESSING_GROUP))
-	type = Type.PLANET
+	object_type = ObjectType.PLANET
 
 
 ################################################################# PUBLIC METHODS #########################################################
-# Put inside oot_processing function evertything you want to process if this scene isn't inside Scene Tree
-func oot_processing(delta: float) -> void:
-	if is_inside_tree():
-		return
-	
-	.oot_processing(delta)	# First we call base class function
-
-
-func generate(body_type: int, zone: int, max_mass: int) -> void:
-	assert(body_type == Type.PLANET || body_type == Type.MOON, "Invalid body type: %d" % body_type)
+func generate(type: int, zone: int, max_mass: int) -> void:
+	assert(type == ObjectType.PLANET || type == ObjectType.MOON, "Invalid body type: %d" % type)
 	assert(zone in Zone.values(), "Invalid zone %d" % zone)
-	assert(max_mass > 0, "Celestial bodies cannot have zero or less mass. You requested: %d" % max_mass)
 	
-	self.type = body_type
+	self.object_type = type
 	var body_class := _get_random_class_in_zone(zone)
 	if body_class.empty():
-		print("No valid choices left for %s at zone: %d" % [get_type_as_str(), zone])
+		print("No valid choices left for %s at zone: %d" % [get_object_type_as_str(), zone])
 		return
+	
+	match type:
+		ObjectType.PLANET:
+			_generate_planet(body_class, max_mass)
+		
+		ObjectType.MOON:
+			_generate_moon(body_class, max_mass)
+	
+	sprite.texture = DATA.Texture[body_class]
+	object_description = DATA.Description[body_class]
 
 
 ################################################################# PRIVATE METHODS ########################################################
+func _generate_planet(body_class: String, max_mass: int) -> void:
+	assert(max_mass > PlanetMass.MIN, "Planetary bodies cannot have less mass than %d. Your mass limit is: %d" % [PlanetMass.MIN, max_mass])
+	
+	var body_mass := INF
+	var game_radius := 0
+	while body_mass > max_mass:
+		var real_radius := Func.randi_from_range(DATA.PlanetRadius[body_class].Min, DATA.PlanetRadius[body_class].Max)
+		game_radius = int(range_lerp(real_radius, Radius.REAL_MIN, Radius.REAL_MAX, Radius.GAME_MIN, Radius.GAME_MAX))
+		body_mass = int(range_lerp(real_radius, Radius.REAL_MIN, Radius.REAL_MAX, PlanetMass.MIN, PlanetMass.MAX))
+	
+	self.object_radius = game_radius
+	object_mass = body_mass
+
+
+# Moons are half the size and mass of planet in the same class
+func _generate_moon(body_class: String, max_mass: int) -> void:
+	var min_moon_mass: int = PlanetMass.MIN / 2
+	assert(max_mass > min_moon_mass, "Moons cannot have less than %d mass. Your mass limit is: %d" % [min_moon_mass, max_mass])
+	var max_moon_mass: int = PlanetMass.MAX / 2
+	var min_real_moon_radius: int = Radius.REAL_MIN / 2
+	var max_real_moon_radius: int = Radius.REAL_MAX / 2
+	
+	var body_mass := INF
+	var game_radius := 0
+	while body_mass > max_mass:
+		var real_radius := Func.randi_from_range(min_real_moon_radius, max_real_moon_radius)
+		game_radius = int(range_lerp(real_radius, min_real_moon_radius, max_real_moon_radius, Radius.GAME_MIN / 2, Radius.GAME_MAX / 2))
+		body_mass = int(range_lerp(real_radius, min_real_moon_radius, max_real_moon_radius, min_moon_mass, max_moon_mass))
+	
+	self.object_radius = game_radius
+	object_mass = body_mass
+
+
 func _get_random_class_in_zone(zone: int) -> String:
 	assert(zone in Zone.values(), "Unknown zone type: %d" % zone)
 	var class_pool := []
 	for body_class in DATA.Zone:
-		if zone in DATA.Zone[body_class] && type in DATA.Type[body_class]:
+		if zone in DATA.Zone[body_class] && object_type in DATA.ObjectType[body_class]:
 			class_pool.append(body_class)
 	
 	return class_pool[randi() % class_pool.size()] if class_pool.size() > 0 else ""

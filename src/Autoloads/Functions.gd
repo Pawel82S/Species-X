@@ -3,7 +3,7 @@ extends Node
 
 static func randi_from_range(from: float, to: float) -> int:
 	assert(to > from)
-	return randi() % int((to - from + 1) + from)
+	return int(randi() % int(to - from + 1) + from)
 
 
 static func randf_from_range(from: float, to: float) -> float:
