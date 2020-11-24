@@ -1,0 +1,6 @@
+#+TITLE: Species X GDD
+#+DESCRIPTION: Species X Game Design Document
+#+AUTHOR: Paweł Standowicz
+#+EMAIL: standek@gmail.com
+
+* Solar System

@@ -12,7 +12,7 @@ enum Zone {
 	OUTER
 }
 
-enum Radius {
+enum PlanetRadius {
 	REAL_MIN = 50,
 	REAL_MAX = 20_000,
 	GAME_MIN = 25,
@@ -20,6 +20,18 @@ enum Radius {
 }
 
 enum PlanetMass {
+	MIN = 45_500_000,
+	MAX = 465_920_000
+}
+
+enum MoonRadius {
+	REAL_MIN = 5,
+	REAL_MAX = 750,
+	GAME_MIN = 25,
+	GAME_MAX = 64
+}
+
+enum MoonMass {
 	MIN = 455_000,
 	MAX = 4_659_200
 }
@@ -27,50 +39,55 @@ enum PlanetMass {
 ################################################################# CONSTANTS ##############################################################
 const PLANETS_CLASSES := "ABCDEFGHIJKLMNOPQRXY"
 const RADIUS_TO_MASS_FACTOR := 18_200
+const TEXTURE_RESOLUTIONS := [ 64, 128, 256, 512 ]
 const DATA := {	# Most likely this should be in JSON file
 		"Texture": {
-			"A": preload("res://icon.png"),
-			"B": preload("res://icon.png"),
-			"C": preload("res://icon.png"),
-			"D": preload("res://icon.png"),
-			"E": preload("res://icon.png"),
-			"F": preload("res://icon.png"),
-			"G": preload("res://icon.png"),
-			"H": preload("res://icon.png"),
-			"I": preload("res://icon.png"),
-			"J": preload("res://icon.png"),
-			"K": preload("res://icon.png"),
-			"L": preload("res://icon.png"),
-			"M": preload("res://icon.png"),
-			"N": preload("res://icon.png"),
-			"O": preload("res://icon.png"),
-			"P": preload("res://icon.png"),
-			"Q": preload("res://icon.png"),
-			"R": preload("res://icon.png"),
-			"X": preload("res://icon.png"),
-			"Y": preload("res://icon.png")
+			64: preload("res://assets/Textures/Planets/Planet 64.png"),
+			128: preload("res://assets/Textures/Planets/Planet 128.png"),
+			256: preload("res://assets/Textures/Planets/Planet 256.png"),
+			512: preload("res://assets/Textures/Planets/Planet 512.png"),
+#			"A": preload("res://icon.png"),
+#			"B": preload("res://icon.png"),
+#			"C": preload("res://icon.png"),
+#			"D": preload("res://icon.png"),
+#			"E": preload("res://icon.png"),
+#			"F": preload("res://icon.png"),
+#			"G": preload("res://icon.png"),
+#			"H": preload("res://icon.png"),
+#			"I": preload("res://icon.png"),
+#			"J": preload("res://icon.png"),
+#			"K": preload("res://icon.png"),
+#			"L": preload("res://icon.png"),
+#			"M": preload("res://icon.png"),
+#			"N": preload("res://icon.png"),
+#			"O": preload("res://icon.png"),
+#			"P": preload("res://icon.png"),
+#			"Q": preload("res://icon.png"),
+#			"R": preload("res://icon.png"),
+#			"X": preload("res://icon.png"),
+#			"Y": preload("res://icon.png")
 		},
 		"Modulation": {
-			"A": Color.greenyellow,
-			"B": Color.greenyellow,
-			"C": Color.greenyellow,
-			"D": Color.greenyellow,
-			"E": Color.greenyellow,
-			"F": Color.greenyellow,
-			"G": Color.greenyellow,
-			"H": Color.greenyellow,
-			"I": Color.greenyellow,
-			"J": Color.greenyellow,
-			"K": Color.greenyellow,
-			"L": Color.greenyellow,
-			"M": Color.greenyellow,
-			"N": Color.greenyellow,
-			"O": Color.greenyellow,
-			"P": Color.greenyellow,
-			"Q": Color.greenyellow,
-			"R": Color.greenyellow,
-			"X": Color.greenyellow,
-			"Y": Color.greenyellow
+			"A": Color(0.98, 0.793963, 0.3234),
+			"B": Color(0.61, 0.5612, 0.5612),
+			"C": Color(0.4599, 0.608455, 0.73),
+			"D": Color(0.6912, 0.72, 0.71616),
+			"E": Color(0.91, 0.522947, 0.1092),
+			"F": Color(0.2867, 0.61, 0.362137),
+			"G": Color.white,
+			"H": Color.white,
+			"I": Color.white,
+			"J": Color.white,
+			"K": Color.white,
+			"L": Color.white,
+			"M": Color.white,
+			"N": Color.white,
+			"O": Color.white,
+			"P": Color.white,
+			"Q": Color.white,
+			"R": Color.white,
+			"X": Color.white,
+			"Y": Color.white
 		},
 		"Description": {
 			"A": 'Class A planets are very small, barren worlds rife with volcanic activity. This activity traps carbon dioxide in the atmosphere and keeps temperatures on Class A planets very hot, no matter the location in a star system. When the volcanic activity ceases, the planet “dies” and is then considered a Class C planet.',
@@ -142,7 +159,6 @@ const DATA := {	# Most likely this should be in JSON file
 			"A": { "Min": 500, "Max": 5000 },
 			"B": { "Min": 500, "Max": 5000 },
 			"C": { "Min": 500, "Max": 5000 },
-			"D": { "Min": 50, "Max": 2000 },
 			"E": { "Min": 5000, "Max": 7500 },
 			"F": { "Min": 5000, "Max": 7500 },
 			"G": { "Min": 5000, "Max": 7500 },
@@ -159,6 +175,16 @@ const DATA := {	# Most likely this should be in JSON file
 			"R": { "Min": 2000, "Max": 7500 },
 			"X": { "Min": 500, "Max": 5000 },
 			"Y": { "Min": 5000, "Max": 7500 },
+		},
+		"MoonRadius": {
+			"A": { "Min": 5, "Max": 500 },
+			"B": { "Min": 5, "Max": 500 },
+			"C": { "Min": 5, "Max": 500 },
+			"D": { "Min": 5, "Max": 200 },
+			"K": { "Min": 5, "Max": 500 },
+			"Q": { "Min": 5, "Max": 750 },
+			"R": { "Min": 5, "Max": 750 },
+			"X": { "Min": 5, "Max": 500 },
 		}
 	}
 
@@ -190,39 +216,37 @@ func generate(type: int, zone: int, max_mass: int) -> void:
 		ObjectType.MOON:
 			_generate_moon(body_class, max_mass)
 	
-	sprite.texture = DATA.Texture[body_class]
+	_select_best_texture_scaled()
+	sprite.self_modulate = DATA.Modulation[body_class]
 	object_description = DATA.Description[body_class]
 
 
 ################################################################# PRIVATE METHODS ########################################################
+#TODO: Add generation of resources, atmosphere etc.
 func _generate_planet(body_class: String, max_mass: int) -> void:
 	assert(max_mass > PlanetMass.MIN, "Planetary bodies cannot have less mass than %d. Your mass limit is: %d" % [PlanetMass.MIN, max_mass])
 	
-	var body_mass := INF
+	var body_mass: int = PlanetMass.MAX + 10_942_867_749_350	# This must be big number so while loop executes at least once
 	var game_radius := 0
 	while body_mass > max_mass:
 		var real_radius := Func.randi_from_range(DATA.PlanetRadius[body_class].Min, DATA.PlanetRadius[body_class].Max)
-		game_radius = int(range_lerp(real_radius, Radius.REAL_MIN, Radius.REAL_MAX, Radius.GAME_MIN, Radius.GAME_MAX))
-		body_mass = int(range_lerp(real_radius, Radius.REAL_MIN, Radius.REAL_MAX, PlanetMass.MIN, PlanetMass.MAX))
+		game_radius = int(range_lerp(real_radius, PlanetRadius.REAL_MIN, PlanetRadius.REAL_MAX, PlanetRadius.GAME_MIN, PlanetRadius.GAME_MAX))
+		body_mass = int(range_lerp(real_radius, PlanetRadius.REAL_MIN, PlanetRadius.REAL_MAX, PlanetMass.MIN, PlanetMass.MAX))
 	
 	self.object_radius = game_radius
 	object_mass = body_mass
 
 
-# Moons are half the size and mass of planet in the same class
+#TODO: Add generation of resources, atmosphere etc.
 func _generate_moon(body_class: String, max_mass: int) -> void:
-	var min_moon_mass: int = PlanetMass.MIN / 2
-	assert(max_mass > min_moon_mass, "Moons cannot have less than %d mass. Your mass limit is: %d" % [min_moon_mass, max_mass])
-	var max_moon_mass: int = PlanetMass.MAX / 2
-	var min_real_moon_radius: int = Radius.REAL_MIN / 2
-	var max_real_moon_radius: int = Radius.REAL_MAX / 2
+	assert(max_mass > MoonMass.MIN, "Moons cannot have less than %d mass. Your mass limit is: %d" % [MoonMass.MIN, max_mass])
 	
-	var body_mass := INF
+	var body_mass: int = MoonMass.MAX + 10_942_867_749_350	# This must be big number so while loop executes at least once
 	var game_radius := 0
 	while body_mass > max_mass:
-		var real_radius := Func.randi_from_range(min_real_moon_radius, max_real_moon_radius)
-		game_radius = int(range_lerp(real_radius, min_real_moon_radius, max_real_moon_radius, Radius.GAME_MIN / 2, Radius.GAME_MAX / 2))
-		body_mass = int(range_lerp(real_radius, min_real_moon_radius, max_real_moon_radius, min_moon_mass, max_moon_mass))
+		var real_radius := Func.randi_from_range(DATA.MoonRadius[body_class].Min, DATA.MoonRadius[body_class].Max)
+		game_radius = int(range_lerp(real_radius, MoonRadius.REAL_MIN, MoonRadius.REAL_MAX, MoonRadius.GAME_MIN, MoonRadius.GAME_MAX))
+		body_mass = int(range_lerp(real_radius, MoonRadius.REAL_MIN, MoonRadius.REAL_MAX, MoonMass.MIN, MoonMass.MAX))
 	
 	self.object_radius = game_radius
 	object_mass = body_mass
@@ -235,4 +259,17 @@ func _get_random_class_in_zone(zone: int) -> String:
 		if zone in DATA.Zone[body_class] && object_type in DATA.ObjectType[body_class]:
 			class_pool.append(body_class)
 	
+	assert(!class_pool.empty(), "No valid class availble in zone %d" % zone)
 	return class_pool[randi() % class_pool.size()] if class_pool.size() > 0 else ""
+
+
+func _select_best_texture_scaled() -> void:
+	var body_diameter = object_radius * 2
+	var resolution := 0
+	for res in TEXTURE_RESOLUTIONS:
+		if body_diameter <= res:
+			resolution = res
+			break
+	
+	sprite.texture = DATA.Texture[resolution]
+	sprite.scale = Vector2(body_diameter, body_diameter) / resolution

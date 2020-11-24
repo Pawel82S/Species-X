@@ -1,4 +1,4 @@
-extends Resource
+extends Reference
 # Galaxy names taken from "https://www.fantasynamegenerators.com/galaxy-names.php"
 const DEFAULT_GALAXY_NAMES = [ "A-944",
 	"AFW 6G",

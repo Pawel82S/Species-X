@@ -14,6 +14,21 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://src/SolarSystem/CelestialBody.gd"
 }, {
+"base": "Camera2D",
+"class": "MainCamera",
+"language": "GDScript",
+"path": "res://src/Game/Camera2D.gd"
+}, {
+"base": "Reference",
+"class": "SolarNames",
+"language": "GDScript",
+"path": "res://src/Universe/SolarNames.gd"
+}, {
+"base": "Node2D",
+"class": "SolarSystem",
+"language": "GDScript",
+"path": "res://src/SolarSystem/SolarSystem.gd"
+}, {
 "base": "SystemObject",
 "class": "Star",
 "language": "GDScript",
@@ -26,6 +41,9 @@ _global_script_classes=[ {
 } ]
 _global_script_class_icons={
 "CelestialBody": "",
+"MainCamera": "",
+"SolarNames": "",
+"SolarSystem": "",
 "Star": "",
 "SystemObject": ""
 }
@@ -34,13 +52,15 @@ _global_script_class_icons={
 
 config/name="Species X"
 config/description="Real-Time Management Space Strategy game that focuses on fleet battles in star systems that are more realistic in size. Empire economy, research, territory and politics are also big part of player experience."
-run/main_scene="res://src/Main.tscn"
+run/main_scene="res://src/GUI/MainMenu.tscn"
 config/icon="res://icon.png"
 
 [autoload]
 
 Const="*res://src/Autoloads/Constants.gd"
+Var="*res://src/Autoloads/Variables.gd"
 Func="*res://src/Autoloads/Functions.gd"
+Event="*res://src/Autoloads/Events.gd"
 
 [display]
 
@@ -93,4 +113,5 @@ ZoomIn={
 
 [rendering]
 
+environment/default_clear_color=Color( 0, 0, 0, 1 )
 environment/default_environment="res://default_env.tres"

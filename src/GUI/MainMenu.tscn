@@ -11,19 +11,18 @@ __meta__ = {
 }
 
 [node name="ButtonsContainer" type="VBoxContainer" parent="."]
-margin_left = 806.0
-margin_top = 398.0
-margin_right = 890.0
-margin_bottom = 556.0
+margin_left = 807.0
+margin_top = 434.0
+margin_right = 889.0
+margin_bottom = 520.0
 alignment = 1
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="Label" type="Label" parent="ButtonsContainer"]
-margin_top = 36.0
-margin_right = 84.0
-margin_bottom = 50.0
+margin_right = 82.0
+margin_bottom = 14.0
 text = "Main Menu"
 align = 1
 valign = 1
@@ -40,9 +39,9 @@ __meta__ = {
 }
 
 [node name="NewButton" type="Button" parent="ButtonsContainer"]
-margin_top = 54.0
-margin_right = 84.0
-margin_bottom = 74.0
+margin_top = 18.0
+margin_right = 82.0
+margin_bottom = 38.0
 button_mask = 3
 text = "New Game"
 
@@ -69,9 +68,9 @@ __meta__ = {
 }
 
 [node name="SettingsButton" type="Button" parent="ButtonsContainer"]
-margin_top = 78.0
-margin_right = 84.0
-margin_bottom = 98.0
+margin_top = 42.0
+margin_right = 82.0
+margin_bottom = 62.0
 button_mask = 3
 text = "Settings"
 __meta__ = {
@@ -79,9 +78,9 @@ __meta__ = {
 }
 
 [node name="QuitButton" type="Button" parent="ButtonsContainer"]
-margin_top = 102.0
-margin_right = 84.0
-margin_bottom = 122.0
+margin_top = 66.0
+margin_right = 82.0
+margin_bottom = 86.0
 button_mask = 3
 text = "Quit"
 __meta__ = {

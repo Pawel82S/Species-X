@@ -1,4 +1,4 @@
-#class_name
+class_name SolarSystem
 extends Node2D
 """
 Each system is divided on 4 zones around a star. This zones are used to determine which planet classes can be placed in particular zones.
@@ -22,7 +22,7 @@ enum PlanetSeparation {
 
 enum MoonSeparation {
 	MIN = 2_000,
-	MAX = 5_000
+	MAX = 3_000
 }
 
 ################################################################# CONSTANTS ##############################################################
@@ -63,60 +63,92 @@ onready var celestial_bodies := $CelestialBodies
 ################################################################# SETTERS & GETTERS ######################################################
 ################################################################# BUILT-IN METHODS #######################################################
 func _ready() -> void:
+	Event.connect("object_selected", self, "_on_object_selected")
 	generate()
 
 
 ################################################################# PUBLIC METHODS #########################################################
 func generate() -> void:
-	var star: Star = SCN_STAR.instance()
-	celestial_bodies.add_child(star)
-	star.generate()
+	var star := _generate_star(SolarNames.new().random_star_name())
 	var mass_for_planets := star.get_max_satellites_mass()
 	_calculate_zones()
-	
 	var orbit: int = zone_range[CelestialBody.Zone.HOT].Begin
-	while mass_for_planets > CelestialBody.PlanetMass.MIN:
+
+	while mass_for_planets > CelestialBody.PlanetMass.MIN && orbit < get_radius() - PlanetSeparation.MAX:
 		orbit += Func.randi_from_range(PlanetSeparation.MIN, PlanetSeparation.MAX)
 		var zone := _get_zone_form_orbit(orbit)
 		if zone > INVALID_ZONE:
-			var planet: CelestialBody = SCN_BODY.instance()
-			star.add_satellite(planet)
-			planet.rotation_degrees = randi() % 360
-			planet.generate(CelestialBody.ObjectType.PLANET, zone, mass_for_planets)
+			var planet := _generate_satellite(star, CelestialBody.ObjectType.PLANET, zone, mass_for_planets)
 			mass_for_planets -= planet.object_mass
-			orbit += planet.object_radius
 			planet.object_orbit = orbit
-			_calculate_orbit_parameters(star, planet, orbit)
 			
 			var mass_for_moons := planet.get_max_satellites_mass()
 			var moon_orbit := planet.object_radius
-			while mass_for_moons > CelestialBody.PlanetMass.MIN / 2:
+			# TODO: Limit adding moons so planet orbit wont leave zone
+			while mass_for_moons > CelestialBody.MoonMass.MIN:
 				moon_orbit += Func.randi_from_range(MoonSeparation.MIN, MoonSeparation.MAX)
-				var moon: CelestialBody = SCN_BODY.instance()
-				planet.add_satellite(moon)
-				moon.rotation_degrees = randi() % 360
-				moon.generate(CelestialBody.ObjectType.MOON, zone, mass_for_moons)
+				var moon := _generate_satellite(planet, CelestialBody.ObjectType.MOON, zone, mass_for_moons)
 				mass_for_moons -= moon.object_mass
-				moon_orbit += moon.object_radius
-				orbit += moon_orbit
 				moon.object_orbit = moon_orbit
-				_calculate_orbit_parameters(planet, moon, moon_orbit)
+				orbit += moon_orbit
+				moon.set_orbit_parameters_for(planet)
+			
+			# Check if we added some moons and move planet orbit if it's true to avoid moons on orbits crossing onther planets or star
+			if moon_orbit != planet.object_radius:
+				planet.object_orbit += moon_orbit
+			
+			planet.set_orbit_parameters_for(star)
 		else:
 			break
+	
+	print("This system has %d planets and %d moons" % [get_planets_count(), get_moons_count()])
 
 
 # If system has special star, then radius is equal to hot zone end
 func get_radius() -> int:
-	var star: Star = celestial_bodies.get_child(0)
-	if star.subtype == star.SubType.NORMAL:
+	var star: Star = get_star()
+	if star.star_type == Star.StarType.NORMAL:
 		return zone_range[CelestialBody.Zone.OUTER].End
 	else:
 		return zone_range[CelestialBody.Zone.HOT].End
 
 
+func get_planets_count() -> int:
+	var star: Star = get_star()
+	return star.get_satellites_count()
+
+
+func get_moons_count() -> int:
+	var star: Star = get_star()
+	var result := 0
+	for planet in star.get_satellites():
+		result += planet.get_satellites_count()
+	return result
+
+
+func get_star() -> Star:
+	return celestial_bodies.get_child(0) as Star
+
+
+func get_object_by_name(obj_name: String) -> SystemObject:
+	var result = null
+	var star: Star = get_star()
+	
+	return result
+
+
 ################################################################# PRIVATE METHODS ########################################################
+func _generate_star(star_name: String) -> Star:
+	var result: Star = SCN_STAR.instance()
+	celestial_bodies.add_child(result)
+	name = star_name
+	result.object_name = name
+	result.generate()
+	return result
+
+
 func _calculate_zones() -> void:
-	var star: Star = celestial_bodies.get_child(0)
+	var star: Star = get_star()
 	assert(star, "System %s does not have any stars." % name)
 	var star_eco_factor := ECO_ZONE_FACTOR * star.object_temperature
 	var half_star_eco_factor := star_eco_factor / 2
@@ -141,19 +173,41 @@ func _get_zone_form_orbit(orbit: int) -> int:
 	return result
 
 
-func _generate_moon(planet_zone: int, max_mass: int) -> CelestialBody:
-	var moon: CelestialBody = SCN_BODY.instance()
-	moon.generate(CelestialBody.ObjectType.MOON, planet_zone, max_mass)
-	return moon
-
-
-func _calculate_orbit_parameters(parent: SystemObject, child: SystemObject, orbit: int) -> void:
-	assert(orbit > 0, "Orbit must be greater than zero. You entered: %d" % orbit)
-	var total_mass := parent.object_mass + child.object_mass
-	var orbital_velocity := sqrt(Const.GRAVITATIONAL * total_mass / orbit) / Const.ORBITAL_SPEED_DIVIDER
-	orbital_velocity *= 1 if randf() < 0.5 else -1
-	child.object_rotation_speed = orbital_velocity
+func _generate_satellite(parent: SystemObject, type: int, zone: int, max_mass: int) -> CelestialBody:
+	assert(type == SystemObject.ObjectType.PLANET || type == SystemObject.ObjectType.MOON)
+	var result: CelestialBody = SCN_BODY.instance()
+	parent.add_satellite(result)
+	result.object_name = "%s-%d" % [parent.object_name, parent.get_satellites_count()]
+	result.rotation_degrees = randi() % 360
+	result.generate(type, zone, max_mass)	
+	return result
 
 
 func _on_SolarSystem_visibility_changed() -> void:
-	pass # If system is not displayed ten we must disable all collisions inside on every object
+	var param := self if visible else null
+	Event.emit_signal("system_changed", param)
+	_toggle_physics(!visible)
+
+func _toggle_physics(disable: bool) -> void:
+#	get_tree().call_group()
+	pass
+
+
+func _on_object_selected(object_name: String) -> void:
+	if !visible:
+		# Do not seach for object if system isn't displayed on screen
+		return
+	
+	var star := get_star()
+	if star.name == object_name:
+		Var.current_camera.follow_object = star
+	else:
+		for planet in star.get_satellites():
+			if planet.name == object_name:
+				Var.current_camera.follow_object = planet
+				break
+			
+			for moon in planet.get_satellites():
+				if moon.name == object_name:
+					Var.current_camera.follow_object = moon
+					return

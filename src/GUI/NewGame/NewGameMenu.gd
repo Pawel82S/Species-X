@@ -1,11 +1,9 @@
 #class_name
-extends CenterContainer
+extends Control
 """
 Script description
 """
 ################################################################# SIGNALS ################################################################
-signal new_game_started
-
 ################################################################# ENUMS ##################################################################
 ################################################################# CONSTANTS ##############################################################
 ################################################################# EXPORT VAR #############################################################
@@ -16,25 +14,5 @@ signal new_game_started
 ################################################################# BUILT-IN METHODS #######################################################
 ################################################################# PUBLIC METHODS #########################################################
 ################################################################# PRIVATE METHODS ########################################################
-func _on_ResumeButton_pressed() -> void:
-	pass # Replace with function body.
-
-
-func _on_NewButton_pressed() -> void:
-	Func.ignore_result(get_tree().change_scene("res://src/GUI/NewGame/NewGameMenu.tscn"))
-
-
-func _on_SaveButton_pressed() -> void:
-	pass # Replace with function body.
-
-
-func _on_LoadButton_pressed() -> void:
-	pass # Replace with function body.
-
-
-func _on_SettingsButton_pressed() -> void:
-	pass # Replace with function body.
-
-
-func _on_QuitButton_pressed() -> void:
-	get_tree().quit()
+func _on_StartButton_pressed() -> void:
+	Func.ignore_result(get_tree().change_scene("res://src/Game/Main.tscn"))

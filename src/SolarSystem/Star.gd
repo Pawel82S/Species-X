@@ -45,25 +45,31 @@ enum StarType {
 }
 
 ################################################################# CONSTANTS ##############################################################
-const RANDOM_STAR_TYPE := -1
 const NORMAL_STAR_CLASSES_CHANCE := 95	# How much chance we have to generate star from main sequence in %
 const NORMAL_STAR_CLASSES_OCCURENCE := "ABFFGGGGGKKKKKKKKMMMMMMMMMMMMMMMMMMMMMMMMMO"
 const DEFAULT_SUN_RADIUS := 500
 const DEFAULT_SUN_MASS := 198_857_354_987	# Sun object_mass = 1.9885 * 10^30 kg
 const DEFAULT_SUN_TEMP := 5498.85
+const TEXTURE_RESOLUTIONS := [ 256, 512, 1024, 2048, 4069 ]
 const DATA := {	# Most likely this should be in JSON file
 		"Texture": {
-			"A": preload("res://assets/Textures/Stars/Star.png"),
-			"B": preload("res://assets/Textures/Stars/Star.png"),
-			"F": preload("res://assets/Textures/Stars/Star.png"),
-			"G": preload("res://assets/Textures/Stars/Star.png"),
-			"K": preload("res://assets/Textures/Stars/Star.png"),
-			"M": preload("res://assets/Textures/Stars/Star.png"),
-			"O": preload("res://assets/Textures/Stars/Star.png"),
-			"Magnetar": preload("res://assets/Textures/Stars/Star.png"),
-			"Pulsar": preload("res://assets/Textures/Stars/Star.png"),
-			"MagnetarPulsar": preload("res://assets/Textures/Stars/Star.png"),
-			"BlackHole": preload("res://assets/Textures/Stars/Star.png")
+			"Normal32": preload("res://assets/Textures/Stars/Star 32.png"),
+			"Normal256": preload("res://assets/Textures/Stars/Star 256.png"),
+			"Normal512": preload("res://assets/Textures/Stars/Star 512.png"),
+			"Normal1024": preload("res://assets/Textures/Stars/Star 1024.png"),
+			"Normal2048": preload("res://assets/Textures/Stars/Star 2048.png"),
+			"Normal4096": preload("res://assets/Textures/Stars/Star 4096.png"),
+#			"A": preload("res://assets/Textures/Stars/Star.png"),
+#			"B": preload("res://assets/Textures/Stars/Star.png"),
+#			"F": preload("res://assets/Textures/Stars/Star.png"),
+#			"G": preload("res://assets/Textures/Stars/Star.png"),
+#			"K": preload("res://assets/Textures/Stars/Star.png"),
+#			"M": preload("res://assets/Textures/Stars/Star.png"),
+#			"O": preload("res://assets/Textures/Stars/Star.png"),
+			"Magnetar256": preload("res://assets/Textures/Stars/Magnetar 256.png"),
+			"Pulsar256": preload("res://assets/Textures/Stars/Pulsar 256.png"),
+			"MagnetarPulsar256": preload("res://assets/Textures/Stars/Magnetar Pulsar 256.png"),
+			"BlackHole256": preload("res://assets/Textures/Stars/Black Hole 256.png")
 		},
 		"Modulation": {
 			"A": Color.blue,
@@ -128,12 +134,12 @@ func get_type_as_str() -> String:
 
 
 # This function is responsible for random star and its possible sattelites generation. We can also pass specific star_type be created.
-func generate(stype: int = RANDOM_STAR_TYPE) -> void:
-	assert(stype in StarType.values() || stype == RANDOM_STAR_TYPE, "Function parameter outside of valid range (stype = %d)." % stype)
-	if stype == StarType.NORMAL || (stype == RANDOM_STAR_TYPE && randi() % 100 < NORMAL_STAR_CLASSES_CHANCE):
+func generate(stype: int = Const.RANDOM) -> void:
+	assert(stype in StarType.values() || stype == Const.RANDOM, "Function parameter outside of valid range (stype = %d)." % stype)
+	if stype == StarType.NORMAL || (stype == Const.RANDOM && randi() % 100 < NORMAL_STAR_CLASSES_CHANCE):
 		star_type = StarType.NORMAL
 	elif stype in StarType.values():
-		if stype == RANDOM_STAR_TYPE:
+		if stype == Const.RANDOM:
 			# We can roll StarType.NORMAL which is case already handeled before so we must roll until something else occures.
 			while star_type == StarType.NORMAL:
 				star_type = randi() % StarType.size()
@@ -142,7 +148,7 @@ func generate(stype: int = RANDOM_STAR_TYPE) -> void:
 	else:	# Theoretically we should never get here
 		print("Cannot generate star of star_type %d, there is only %d types of stars" % [stype, StarType.size()])
 		return
-	
+#	star_type = StarType.NORMAL
 	match star_type:
 		StarType.NORMAL:
 			_generate_normal_star()
@@ -158,6 +164,8 @@ func generate(stype: int = RANDOM_STAR_TYPE) -> void:
 		
 		StarType.BLACK_HOLE:
 			_generate_black_hole()
+	
+	_assign_best_texture_scaled()
 
 
 ################################################################# PRIVATE METHODS ########################################################
@@ -170,6 +178,7 @@ func _generate_normal_star() -> void:
 		"K": _generate_star_k()
 		"M": _generate_star_m()
 		"O": _generate_star_o()
+#	_generate_star_b()
 
 
 func _generate_magnetar_star() -> void:
@@ -219,7 +228,7 @@ func _generate_black_hole() -> void:
 
 
 func _generate_star_a() -> void:
-	sprite.texture = DATA.Texture.A
+#	sprite.texture = DATA.Texture.A
 	sprite.self_modulate = DATA.Modulation.A
 	object_description = DATA.Description.A
 	object_temperature = Func.celsius_from_kelvin(Func.randi_from_range(7_500, 10_000))
@@ -232,7 +241,7 @@ func _generate_star_a() -> void:
 
 
 func _generate_star_b() -> void:
-	sprite.texture = DATA.Texture.B
+#	sprite.texture = DATA.Texture.B
 	sprite.self_modulate = DATA.Modulation.B
 	object_description = DATA.Description.B
 	object_temperature = Func.celsius_from_kelvin(Func.randi_from_range(10_000, 30_000))
@@ -245,7 +254,7 @@ func _generate_star_b() -> void:
 
 
 func _generate_star_f() -> void:
-	sprite.texture = DATA.Texture.F
+#	sprite.texture = DATA.Texture.F
 	sprite.self_modulate = DATA.Modulation.F
 	object_description = DATA.Description.F
 	object_temperature = Func.celsius_from_kelvin(Func.randi_from_range(7_500, 10_000))
@@ -258,7 +267,7 @@ func _generate_star_f() -> void:
 
 
 func _generate_star_g() -> void:
-	sprite.texture = DATA.Texture.G
+#	sprite.texture = DATA.Texture.G
 	sprite.self_modulate = DATA.Modulation.G
 	object_description = DATA.Description.G
 	object_temperature = Func.celsius_from_kelvin(Func.randi_from_range(6_000, 7_500))
@@ -271,7 +280,7 @@ func _generate_star_g() -> void:
 
 
 func _generate_star_k() -> void:
-	sprite.texture = DATA.Texture.K
+#	sprite.texture = DATA.Texture.K
 	sprite.self_modulate = DATA.Modulation.K
 	object_description = DATA.Description.K
 	object_temperature = Func.celsius_from_kelvin(Func.randi_from_range(3_700, 5_200))
@@ -284,7 +293,7 @@ func _generate_star_k() -> void:
 
 
 func _generate_star_m() -> void:
-	sprite.texture = DATA.Texture.M
+#	sprite.texture = DATA.Texture.M
 	sprite.self_modulate = DATA.Modulation.M
 	object_description = DATA.Description.M
 	object_temperature = Func.celsius_from_kelvin(Func.randi_from_range(2_400, 3_700))
@@ -298,7 +307,7 @@ func _generate_star_m() -> void:
 
 
 func _generate_star_o() -> void:
-	sprite.texture = DATA.Texture.O
+#	sprite.texture = _ass
 	sprite.self_modulate = DATA.Modulation.O
 	object_description = DATA.Description.O
 	object_temperature = Func.celsius_from_kelvin(Func.randi_from_range(30_000, 52_000))
@@ -312,3 +321,31 @@ func _generate_star_o() -> void:
 	# Max radius (20) is just my guess
 	self.object_radius = int(range_lerp(object_mass, min_mass, max_mass, DEFAULT_SUN_RADIUS * 6.6, DEFAULT_SUN_RADIUS * 20))
 	print("Star subtype O generation not implemented")
+
+
+func _assign_best_texture_scaled() -> void:
+	var resolution := 0
+	var object_diameter := object_radius * 2
+	for res in TEXTURE_RESOLUTIONS:
+		if object_diameter <= res:
+			resolution = res
+			break
+	assert(resolution > 0, "Could not find proper texture resolution for Star radius: %d" % object_radius)
+	
+	match star_type:
+		StarType.NORMAL:
+			sprite.texture = DATA.Texture["Normal%d" % resolution]
+		
+		StarType.MAGNETAR:
+			print("Magnetar textures not yet implemented")
+		
+		StarType.PULSAR:
+			print("Pulsar textures not yet implemented")
+		
+		StarType.MAGNETAR_PULSAR:
+			print("Magnetar + Pulsar textures not yet implemented")
+		
+		StarType.BLACK_HOLE:
+			print("Black Hole textures not yet implemented")
+	
+	sprite.scale = Vector2(object_diameter, object_diameter) / resolution

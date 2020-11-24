@@ -30,10 +30,11 @@ const SATELLITES_MASS_FACTOR := 0.1	# Total mass of all satellites around star o
 ################################################################# EXPORT VAR #############################################################
 ################################################################# PUBLIC VAR #############################################################
 var object_type: int = ObjectType.STAR setget set_object_type
+var object_name := "" setget set_object_name
 var object_orbit := 0 setget set_object_orbit
 var object_radius := 1 setget set_object_radius
 var object_mass := 1 setget set_object_mass
-var object_rotation_speed := 0.0 setget set_object_rotation_speed
+var object_rotation_speed := 0.0
 var object_temperature := 0.0	# in celsius
 var object_description := ""
 var object_user_comment := ""
@@ -45,6 +46,7 @@ onready var body := $StaticBody2D
 onready var collision_shape := $StaticBody2D/CollisionShape2D
 onready var sprite := $StaticBody2D/Sprite
 onready var satellites := $StaticBody2D/Satellites
+onready var name_label := $StaticBody2D/NameLabel
 
 
 ################################################################# SETTERS & GETTERS ######################################################
@@ -54,10 +56,18 @@ func set_object_type(val:int) -> void:
 	satellites.visible = false if val == ObjectType.MOON else true
 
 
+func set_object_name(val: String) -> void:
+	assert(!val.empty(), "Object name cannot be empty")
+	name = val
+	object_name = val
+	name_label.text = val
+
+
 func set_object_radius(val: int) -> void:
 	assert(val > 0, "Object radius must be greater than 0 (%d)" % val)
 	object_radius = val
 	collision_shape.shape.radius = object_radius
+	name_label.rect_position.y = val + 10
 	_rescale_sprite()
 
 
@@ -70,10 +80,6 @@ func set_object_orbit(val: int) -> void:
 	assert(val >= 0, "Orbit height cannot have negative value: %d" % val)
 	object_orbit = val
 	body.position.x = val
-
-
-func set_object_rotation_speed(val: float) -> void:
-	object_rotation_speed = val
 
 
 ################################################################# BUILT-IN METHODS #######################################################
@@ -115,8 +121,26 @@ func get_satellites() -> Array:
 	return satellites.get_children()
 
 
-func get_max_satellites_mass() -> float:
-	return object_mass * SATELLITES_MASS_FACTOR
+func get_satellites_count() -> int:
+	return satellites.get_child_count()
+
+
+func get_max_satellites_mass() -> int:
+	return int(object_mass * SATELLITES_MASS_FACTOR)
+
+
+func set_orbit_parameters_for(parent: SystemObject) -> void:
+	assert(object_orbit > 0, "Orbit must be greater than zero. You entered: %d" % object_orbit)
+	var total_mass := parent.object_mass + object_mass
+	object_rotation_speed = sqrt(Const.GRAVITATIONAL * total_mass / object_orbit) / Const.ORBITAL_SPEED_DIVIDER
+	
+	match object_type:
+		ObjectType.PLANET:
+			object_rotation_speed /= 10
+		ObjectType.MOON:
+			object_rotation_speed *= 10
+	
+	object_rotation_speed *= 1 if randf() < 0.5 else -1
 
 
 ################################################################# PRIVATE METHODS ########################################################
