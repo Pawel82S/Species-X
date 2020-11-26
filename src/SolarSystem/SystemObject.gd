@@ -14,6 +14,10 @@ they would have less than 1% of Sun mass. This means that mass of our whole sola
 than 99% of it. To avoid so huge numbers in game (Godot doesn't have data type this big) we reduce mass of every solar object by a huge
 amount and increase total mass of star orbiting satellites (planets) to SATELLITES_MASS_FACTOR of its mass. This constant is also applied
 to mass of moons in relation to mass of planets they will be orbiting.
+
+WARNING: Running physics simulation on every celestial body every frame is big NO. _physics_process takes 200ms wich means game would run
+at 5 FPS! I have to find way to sumulate passing time without involving physics. By storing time and disabling _physics_process  I was able
+to reduce frame time to around 16ms which is ~60 FPS in debug mode. I expect FPS will get higher in realease
 """
 ################################################################# SIGNALS ################################################################
 ################################################################# ENUMS ##################################################################
@@ -41,12 +45,15 @@ var object_user_comment := ""
 
 
 ################################################################# PRIVATE VAR ############################################################
+var _delta_time := 0.0
+
+
 ################################################################# ONREADY VAR ############################################################
-onready var body := $StaticBody2D
-onready var collision_shape := $StaticBody2D/CollisionShape2D
-onready var sprite := $StaticBody2D/Sprite
-onready var satellites := $StaticBody2D/Satellites
-onready var name_label := $StaticBody2D/NameLabel
+onready var body := $Area2D
+onready var collision_shape := $Area2D/CollisionShape2D
+onready var sprite := $Area2D/Sprite
+onready var satellites := $Area2D/Satellites
+onready var name_label := $Area2D/NameLabel
 
 
 ################################################################# SETTERS & GETTERS ######################################################
@@ -89,6 +96,10 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	orbital_movement(delta)
+
+
+func _process(delta: float) -> void:
+	_progress_time(delta)
 
 
 ################################################################# PUBLIC METHODS #########################################################
@@ -143,12 +154,29 @@ func set_orbit_parameters_for(parent: SystemObject) -> void:
 	object_rotation_speed *= 1 if randf() < 0.5 else -1
 
 
+func toggle_physics(disable: bool) -> void:
+	collision_shape.disabled = disable
+	set_physics_process(!disable) # This will disable orbital movement of all celestial bodies
+	set_process(disable)
+	
+	# If physics processing is enabled again I will apply time that passed since last system visit to orbital movement of solar body
+	if !disable:
+		orbital_movement(_delta_time)
+		_delta_time = 0
+
+
 ################################################################# PRIVATE METHODS ########################################################
 func _rescale_sprite() -> void:
 	var body_diameter := object_radius * 2.0
 	var scale_width: float = body_diameter / sprite.texture.get_width()
 	var scale_height: float = body_diameter / sprite.texture.get_height()
 	sprite.scale = Vector2(scale_width, scale_height)
+
+
+func _progress_time(delta: float) -> void:
+	_delta_time += delta
+	if _delta_time > 1:
+		_delta_time -= 1
 
 
 func _on_VisibilityEnabler2D_screen_entered() -> void:

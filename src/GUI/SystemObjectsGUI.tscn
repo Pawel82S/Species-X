@@ -18,6 +18,7 @@ __meta__ = {
 }
 
 [node name="FilterEdit" type="LineEdit" parent="VBoxContainer"]
+self_modulate = Color( 1, 1, 1, 0.658824 )
 margin_right = 1696.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
@@ -27,6 +28,7 @@ __meta__ = {
 }
 
 [node name="ObjectsTree" type="Tree" parent="VBoxContainer"]
+self_modulate = Color( 1, 1, 1, 0.658824 )
 margin_top = 28.0
 margin_right = 1696.0
 margin_bottom = 954.0

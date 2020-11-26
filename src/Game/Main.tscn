@@ -11,6 +11,8 @@ script = ExtResource( 1 )
 
 [node name="Universe" parent="." instance=ExtResource( 4 )]
 
+[node name="SolarSystems" type="Node" parent="."]
+
 [node name="GUILayer" type="CanvasLayer" parent="."]
 script = ExtResource( 2 )
 
@@ -18,4 +20,6 @@ script = ExtResource( 2 )
 visible = false
 
 [node name="SystemObjects" parent="GUILayer" instance=ExtResource( 5 )]
+visible = false
+show_behind_parent = true
 anchor_left = 0.8

@@ -7,13 +7,16 @@ real data would be hard or impossible, data will be altered to fit game mechanic
 Main sequence stars (Harvard spectral classification) in alphabetic order (this is about 99% of stars on our sky):
 		Temperature	  | Chromacity		   | Sun Mass	 | Sun Radius  | Luminosity | Hydrogen lines | Fraction of all
 	A:= 7.5kK - 10kK  | blue			   | 1.4 - 2.1	 | 1.4 - 1.8   | 5 - 25		| Strong		 | 0.6%
-	B:= 10kK - 30kK	  | deep blue white	   | 2.1 - 16	 | 1.8 - 6.6   | 25 - 30k	| Medium		 | 0.13%
+	B:= 10kK - 30kK	  | deep blue white	   | 2.1 - 16	 | 1.8 - 6.6[3]   | 25 - 30k	| Medium		 | 0.13%
 	F:= 6kK - 7.5kK	  | white			   | 1.04 - 1.4	 | 1.15 - 1.4  | 1.5 - 5	| Medium		 | 3%
 	G:= 5.2kK - 6kK	  | yellowish white	   | 0.8 - 1.04	 | 0.96 - 1.15 | 0.6 - 1.5	| Weak			 | 7.6%
 	K:= 3.7kK - 5.2kK | pale yellow orange | 0.45 - 0.8	 | 0.7 - 0.96  | 0.08 - 0.6 | Very weak		 | 12.1%
 	M:= 2.4kK - 3.7kK | light orange red   | 0.08 - 0.45 | 0.35? - 0.7 | <= 0.08	| Very weak		 | 76.45%
-	O:= 30kK - 52kK	  | blue			   | >= 16 - 50? | >= 6.6	   | >= 30k		| Weak			 | 0.00003%
+	O:= 30kK - 52kK	  | blue			   | >= 16 - 50? | >= 6.6[3-4]	   | >= 30k		| Weak			 | 0.00003%
 																									   99.78003%
+NOTE: B and O class star radius was changed to smaller because biggest texture size is 4k (4096) which means without upscaling it and making
+graphic worse max radius of star can be 2048px.
+
 First thing that will be adjusted is chance of occurance, because some types like 'O', 'B' and 'A' have so low chances in reality that
 implementing them in game would be a waste of time. Besides main sequence stars are more than 99.7% of all stars so we will reduce occurence
 of them to fit Quasars, Black holes and Neutron stars(Pulsars, Magnetars) which will be included in game.
@@ -50,10 +53,11 @@ const NORMAL_STAR_CLASSES_OCCURENCE := "ABFFGGGGGKKKKKKKKMMMMMMMMMMMMMMMMMMMMMMM
 const DEFAULT_SUN_RADIUS := 500
 const DEFAULT_SUN_MASS := 198_857_354_987	# Sun object_mass = 1.9885 * 10^30 kg
 const DEFAULT_SUN_TEMP := 5498.85
-const TEXTURE_RESOLUTIONS := [ 256, 512, 1024, 2048, 4069 ]
+const TEXTURE_RESOLUTIONS := [ 256, 512, 1024, 2048, 4096 ]
 const DATA := {	# Most likely this should be in JSON file
 		"Texture": {
 			"Normal32": preload("res://assets/Textures/Stars/Star 32.png"),
+			"Normal64": preload("res://assets/Textures/Stars/Star 64.png"),
 			"Normal256": preload("res://assets/Textures/Stars/Star 256.png"),
 			"Normal512": preload("res://assets/Textures/Stars/Star 512.png"),
 			"Normal1024": preload("res://assets/Textures/Stars/Star 1024.png"),
@@ -66,9 +70,13 @@ const DATA := {	# Most likely this should be in JSON file
 #			"K": preload("res://assets/Textures/Stars/Star.png"),
 #			"M": preload("res://assets/Textures/Stars/Star.png"),
 #			"O": preload("res://assets/Textures/Stars/Star.png"),
+			"Magnetar64": preload("res://assets/Textures/Stars/Magnetar 64.png"),
 			"Magnetar256": preload("res://assets/Textures/Stars/Magnetar 256.png"),
+			"Pulsar64": preload("res://assets/Textures/Stars/Pulsar 64.png"),
 			"Pulsar256": preload("res://assets/Textures/Stars/Pulsar 256.png"),
+			"MagnetarPulsar64": preload("res://assets/Textures/Stars/Magnetar Pulsar 64.png"),
 			"MagnetarPulsar256": preload("res://assets/Textures/Stars/Magnetar Pulsar 256.png"),
+			"BlackHole64": preload("res://assets/Textures/Stars/Black Hole 64.png"),
 			"BlackHole256": preload("res://assets/Textures/Stars/Black Hole 256.png")
 		},
 		"Modulation": {
@@ -79,10 +87,10 @@ const DATA := {	# Most likely this should be in JSON file
 			"K": Color.orange,
 			"M": Color.orangered,
 			"O": Color.aqua,
-			"Magnetar": Color.pink,
-			"Pulsar": Color.pink,
-			"MagnetarPulsar": Color.pink,
-			"BlackHole": Color.pink
+			"Magnetar": Color.white,
+			"Pulsar": Color.white,
+			"MagnetarPulsar": Color.white,
+			"BlackHole": Color.white
 		},
 		"Description": {
 			"A": "Class A star",
@@ -104,6 +112,7 @@ const DATA := {	# Most likely this should be in JSON file
 var star_type: int = StarType.NORMAL setget set_star_type
 var luminosity := 0.0
 var color := Color.white
+var icon: Texture = DATA.Texture.Normal64
 
 
 ################################################################# PRIVATE VAR ############################################################
@@ -138,20 +147,20 @@ func generate(stype: int = Const.RANDOM) -> void:
 	assert(stype in StarType.values() || stype == Const.RANDOM, "Function parameter outside of valid range (stype = %d)." % stype)
 	if stype == StarType.NORMAL || (stype == Const.RANDOM && randi() % 100 < NORMAL_STAR_CLASSES_CHANCE):
 		star_type = StarType.NORMAL
-	elif stype in StarType.values():
-		if stype == Const.RANDOM:
-			# We can roll StarType.NORMAL which is case already handeled before so we must roll until something else occures.
-			while star_type == StarType.NORMAL:
-				star_type = randi() % StarType.size()
-		else:
-			star_type = stype
-	else:	# Theoretically we should never get here
-		print("Cannot generate star of star_type %d, there is only %d types of stars" % [stype, StarType.size()])
-		return
+	elif stype == Const.RANDOM:
+		# We can roll StarType.NORMAL which is case already handeled before so we must roll until something else occures.
+		while star_type == StarType.NORMAL:
+			star_type = randi() % StarType.size()
+	else:
+		star_type = stype
+#	else:	# Theoretically we should never get here
+#		print("Cannot generate star of star_type %d, there is only %d types of stars" % [stype, StarType.size()])
+#		return
 #	star_type = StarType.NORMAL
 	match star_type:
 		StarType.NORMAL:
 			_generate_normal_star()
+			_assign_best_texture_scaled()
 		
 		StarType.MAGNETAR:
 			_generate_magnetar_star()
@@ -164,8 +173,6 @@ func generate(stype: int = Const.RANDOM) -> void:
 		
 		StarType.BLACK_HOLE:
 			_generate_black_hole()
-	
-	_assign_best_texture_scaled()
 
 
 ################################################################# PRIVATE METHODS ########################################################
@@ -178,34 +185,39 @@ func _generate_normal_star() -> void:
 		"K": _generate_star_k()
 		"M": _generate_star_m()
 		"O": _generate_star_o()
-#	_generate_star_b()
 
 
 func _generate_magnetar_star() -> void:
-	sprite.texture = DATA.Texture.Magnetar
+	sprite.texture = DATA.Texture.Magnetar256
+	icon = DATA.Texture.Magnetar64
 	sprite.self_modulate = DATA.Modulation.Magnetar
+	color = DATA.Modulation.Magnetar
 	object_description = DATA.Description.Magnetar
 	# This is neutron star so we will use generic neutron star generation code for now
 	_generate_neutron_star()
-	print("Magnetar star generation not implemented")
+	print("Magnetar star generation not fully implemented")
 
 
 func _generate_pulsar_star() -> void:
-	sprite.texture = DATA.Texture.Pulsar
+	sprite.texture = DATA.Texture.Pulsar256
+	icon = DATA.Texture.Pulsar64
 	sprite.self_modulate = DATA.Modulation.Pulsar
+	color = DATA.Modulation.Pulsar
 	object_description = DATA.Description.Pulsar
 	# This is neutron star so we will use generic neutron star generation code for now
 	_generate_neutron_star()
-	print("Pulsar star generation not implemented")
+	print("Pulsar star generation not fully implemented")
 
 
 func _generate_magnetar_pulsar() -> void:
-	sprite.texture = DATA.Texture.MagnetarPulsar
+	sprite.texture = DATA.Texture.MagnetarPulsar256
+	icon = DATA.Texture.MagnetarPulsar64
 	sprite.self_modulate = DATA.Modulation.MagnetarPulsar
+	color = DATA.Modulation.MagnetarPulsar
 	object_description = DATA.Description.MagnetarPulsar
 	# This is neutron star so we will use generic neutron star generation code for now
 	_generate_neutron_star()
-	print("Magnetar + Pulsar star generation not implemented")
+	print("Magnetar + Pulsar star generation not fully implemented")
 
 
 func _generate_neutron_star() -> void:
@@ -215,20 +227,25 @@ func _generate_neutron_star() -> void:
 	# From https://en.wikipedia.org/wiki/Neutron_star:
 	# Neutron stars that can be observed are very hot and typically have a surface temperature of around 600000 K
 	object_temperature = Func.celsius_from_kelvin(Func.randf_from_range(550_000, 650_000))
-	self.object_radius = int(range_lerp(object_mass, min_mass, max_mass, 50, 75))
+	self.object_radius = 128	#	Texture is 256x256
 
 
 func _generate_black_hole() -> void:
-	sprite.texture = DATA.Texture.BlackHole
+	icon = DATA.Texture.BlackHole64
+	color = DATA.Modulation.BlackHole
+	sprite.texture = DATA.Texture.BlackHole256
 	sprite.self_modulate = DATA.Modulation.BlackHole
 	object_description = DATA.Description.BlackHole
 	# Size of stars is dependent on their object_mass (bigger object_mass, bigger star)
-#	self.object_radius = range_lerp(object_mass, min_mass, max_mass, DEFAULT_SUN_RADIUS * 1.4, DEFAULT_SUN_RADIUS * 1.8)
-	print("Black hole generation not implemented")
+	satellites.visible = false
+	object_mass = int(INF)
+	self.object_radius = 128
+	print("Black hole generation not fully implemented")
 
 
 func _generate_star_a() -> void:
-#	sprite.texture = DATA.Texture.A
+	icon = DATA.Texture.Normal64
+	color = DATA.Modulation.A
 	sprite.self_modulate = DATA.Modulation.A
 	object_description = DATA.Description.A
 	object_temperature = Func.celsius_from_kelvin(Func.randi_from_range(7_500, 10_000))
@@ -237,11 +254,12 @@ func _generate_star_a() -> void:
 	object_mass = Func.randi_from_range(min_mass, max_mass)
 	# Size of stars is dependent on their object_mass (bigger object_mass, bigger star)
 	self.object_radius = int(range_lerp(object_mass, min_mass, max_mass, DEFAULT_SUN_RADIUS * 1.4, DEFAULT_SUN_RADIUS * 1.8))
-	print("Star subtype A generation not implemented")
+	print("Star subtype A generation not fully implemented")
 
 
 func _generate_star_b() -> void:
-#	sprite.texture = DATA.Texture.B
+	icon = DATA.Texture.Normal64
+	color = DATA.Modulation.B
 	sprite.self_modulate = DATA.Modulation.B
 	object_description = DATA.Description.B
 	object_temperature = Func.celsius_from_kelvin(Func.randi_from_range(10_000, 30_000))
@@ -249,12 +267,13 @@ func _generate_star_b() -> void:
 	var max_mass := DEFAULT_SUN_MASS * 16
 	object_mass = Func.randi_from_range(min_mass, max_mass)
 	# Size of stars is dependent on their object_mass (bigger object_mass, bigger star)
-	self.object_radius = int(range_lerp(object_mass, min_mass, max_mass, DEFAULT_SUN_RADIUS * 1.8, DEFAULT_SUN_RADIUS * 6.6))
-	print("Star subtype B generation not implemented")
+	self.object_radius = int(range_lerp(object_mass, min_mass, max_mass, DEFAULT_SUN_RADIUS * 1.8, DEFAULT_SUN_RADIUS * 3))
+	print("Star subtype B generation not fully implemented")
 
 
 func _generate_star_f() -> void:
-#	sprite.texture = DATA.Texture.F
+	icon = DATA.Texture.Normal64
+	color = DATA.Modulation.F
 	sprite.self_modulate = DATA.Modulation.F
 	object_description = DATA.Description.F
 	object_temperature = Func.celsius_from_kelvin(Func.randi_from_range(7_500, 10_000))
@@ -263,11 +282,12 @@ func _generate_star_f() -> void:
 	object_mass = Func.randi_from_range(min_mass, max_mass)
 	# Size of stars is dependent on their object_mass (bigger object_mass, bigger star)
 	self.object_radius = int(range_lerp(object_mass, min_mass, max_mass, DEFAULT_SUN_RADIUS * 1.15, DEFAULT_SUN_RADIUS * 1.4))
-	print("Star subtype F generation not implemented")
+	print("Star subtype F generation not fully implemented")
 
 
 func _generate_star_g() -> void:
-#	sprite.texture = DATA.Texture.G
+	icon = DATA.Texture.Normal64
+	color = DATA.Modulation.G
 	sprite.self_modulate = DATA.Modulation.G
 	object_description = DATA.Description.G
 	object_temperature = Func.celsius_from_kelvin(Func.randi_from_range(6_000, 7_500))
@@ -276,11 +296,12 @@ func _generate_star_g() -> void:
 	object_mass = Func.randi_from_range(min_mass, max_mass)
 	# Size of stars is dependent on their object_mass (bigger object_mass, bigger star)
 	self.object_radius = int(range_lerp(object_mass, min_mass, max_mass, DEFAULT_SUN_RADIUS * 0.96, DEFAULT_SUN_RADIUS * 1.15))
-	print("Star subtype G generation not implemented")
+	print("Star subtype G generation not fully implemented")
 
 
 func _generate_star_k() -> void:
-#	sprite.texture = DATA.Texture.K
+	icon = DATA.Texture.Normal64
+	color = DATA.Modulation.K
 	sprite.self_modulate = DATA.Modulation.K
 	object_description = DATA.Description.K
 	object_temperature = Func.celsius_from_kelvin(Func.randi_from_range(3_700, 5_200))
@@ -289,11 +310,12 @@ func _generate_star_k() -> void:
 	object_mass = Func.randi_from_range(min_mass, max_mass)
 	# Size of stars is dependent on their object_mass (bigger object_mass, bigger star)
 	self.object_radius = int(range_lerp(object_mass, min_mass, max_mass, DEFAULT_SUN_RADIUS * 0.7, DEFAULT_SUN_RADIUS * 0.96))
-	print("Star subtype K generation not implemented")
+	print("Star subtype K generation not fully implemented")
 
 
 func _generate_star_m() -> void:
-#	sprite.texture = DATA.Texture.M
+	icon = DATA.Texture.Normal64
+	color = DATA.Modulation.M
 	sprite.self_modulate = DATA.Modulation.M
 	object_description = DATA.Description.M
 	object_temperature = Func.celsius_from_kelvin(Func.randi_from_range(2_400, 3_700))
@@ -303,11 +325,12 @@ func _generate_star_m() -> void:
 	# Size of stars is dependent on their object_mass (bigger object_mass, bigger star)
 	# Min radius (0.35) is just my guess
 	self.object_radius = int(range_lerp(object_mass, min_mass, max_mass, DEFAULT_SUN_RADIUS * 0.35, DEFAULT_SUN_RADIUS * 0.7))
-	print("Star subtype M generation not implemented")
+	print("Star subtype M generation not fully implemented")
 
 
 func _generate_star_o() -> void:
-#	sprite.texture = _ass
+	icon = DATA.Texture.Normal64
+	color = DATA.Modulation.O
 	sprite.self_modulate = DATA.Modulation.O
 	object_description = DATA.Description.O
 	object_temperature = Func.celsius_from_kelvin(Func.randi_from_range(30_000, 52_000))
@@ -319,8 +342,8 @@ func _generate_star_o() -> void:
 	object_mass = Func.randi_from_range(min_mass, max_mass)
 	# Size of stars is dependent on their object_mass (bigger object_mass, bigger star)
 	# Max radius (20) is just my guess
-	self.object_radius = int(range_lerp(object_mass, min_mass, max_mass, DEFAULT_SUN_RADIUS * 6.6, DEFAULT_SUN_RADIUS * 20))
-	print("Star subtype O generation not implemented")
+	self.object_radius = int(range_lerp(object_mass, min_mass, max_mass, DEFAULT_SUN_RADIUS * 3, DEFAULT_SUN_RADIUS * 4))
+	print("Star subtype O generation not fully implemented")
 
 
 func _assign_best_texture_scaled() -> void:
@@ -337,15 +360,15 @@ func _assign_best_texture_scaled() -> void:
 			sprite.texture = DATA.Texture["Normal%d" % resolution]
 		
 		StarType.MAGNETAR:
-			print("Magnetar textures not yet implemented")
+			_generate_magnetar_star()
 		
 		StarType.PULSAR:
-			print("Pulsar textures not yet implemented")
+			_generate_pulsar_star()
 		
 		StarType.MAGNETAR_PULSAR:
-			print("Magnetar + Pulsar textures not yet implemented")
+			_generate_magnetar_pulsar()
 		
 		StarType.BLACK_HOLE:
-			print("Black Hole textures not yet implemented")
+			_generate_black_hole()
 	
 	sprite.scale = Vector2(object_diameter, object_diameter) / resolution

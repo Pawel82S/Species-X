@@ -1,5 +1,5 @@
 #class_name
-extends Node
+extends Area2D
 """
 Script description
 """
@@ -9,22 +9,21 @@ Script description
 ################################################################# EXPORT VAR #############################################################
 ################################################################# PUBLIC VAR #############################################################
 ################################################################# PRIVATE VAR ############################################################
+var _system: SolarSystem = null
 ################################################################# ONREADY VAR ############################################################
-onready var universe := $Universe
-onready var solar_systems :=$SolarSystems
-onready var gui_layer := $GUILayer
-onready var main_menu := $GUILayer/MainMenu
-onready var system_gui := $GUILayer/SystemObjects
-
-
+onready var sprite := $Sprite
+onready var name_label := $NameLabel
 ################################################################# SETTERS & GETTERS ######################################################
 ################################################################# BUILT-IN METHODS #######################################################
-func _ready() -> void:
-	universe.add_system = funcref(self, "_add_system")
-	universe.create_solar_systems(100)
-
-
 ################################################################# PUBLIC METHODS #########################################################
+func assign_system(system: SolarSystem) -> void:
+	sprite.texture = system.get_icon_texture()
+	sprite.self_modulate = system.get_star().color
+	name_label.text = system.name
+	_system = system
+
+
 ################################################################# PRIVATE METHODS ########################################################
-func _add_system(sys: SolarSystem) -> void:
-	solar_systems.add_child(sys)
+func _on_SystemInUniverse_input_event(viewport: Node, event: InputEvent, shape_idx: int) -> void:
+	if event.is_action_released("lmb"):
+		Event.emit_signal("show_system", _system)

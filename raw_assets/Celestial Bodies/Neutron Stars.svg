@@ -15,9 +15,9 @@
    id="svg8"
    inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)"
    sodipodi:docname="Neutron Stars.svg"
-   inkscape:export-filename="/home/pawel/PROGRAMOWANIE/Godot/Species X/raw_assets/Celestial Bodies/Magnetar Pulsar 256.png"
-   inkscape:export-xdpi="96"
-   inkscape:export-ydpi="96">
+   inkscape:export-filename="/home/pawel/PROGRAMOWANIE/Godot/Species X/raw_assets/Celestial Bodies/Pulsar 64.png"
+   inkscape:export-xdpi="24"
+   inkscape:export-ydpi="24">
   <defs
      id="defs2">
     <filter
@@ -190,7 +190,7 @@
      inkscape:label="Magnetar Concept Art"
      inkscape:groupmode="layer"
      id="layer1"
-     style="display:inline">
+     style="display:none">
     <image
        width="125.4125"
        height="93.927086"
@@ -205,7 +205,7 @@
      inkscape:groupmode="layer"
      id="layer2"
      inkscape:label="Pulsar Concept Art"
-     style="display:inline">
+     style="display:none">
     <image
        width="125.4125"
        height="65.881248"
@@ -235,7 +235,7 @@
      inkscape:groupmode="layer"
      id="layer6"
      inkscape:label="Rings"
-     style="display:inline">
+     style="display:none">
     <g
        id="g3014">
       <ellipse

@@ -10,17 +10,98 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="StartButton" type="Button" parent="."]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -25.0
-margin_top = -10.0
-margin_right = 25.0
-margin_bottom = 10.0
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ParametersContainer" type="HBoxContainer" parent="VBoxContainer"]
+margin_right = 1696.0
+margin_bottom = 930.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="SpeciesSection" type="HBoxContainer" parent="VBoxContainer/ParametersContainer"]
+margin_right = 846.0
+margin_bottom = 930.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="LabelsContainer" type="VBoxContainer" parent="VBoxContainer/ParametersContainer/SpeciesSection"]
+margin_right = 91.0
+margin_bottom = 930.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="SpeciesNameLabel" type="Label" parent="VBoxContainer/ParametersContainer/SpeciesSection/LabelsContainer"]
+margin_right = 91.0
+margin_bottom = 14.0
+text = "Species Name"
+
+[node name="SpeciesTAGLabel" type="Label" parent="VBoxContainer/ParametersContainer/SpeciesSection/LabelsContainer"]
+margin_top = 18.0
+margin_right = 91.0
+margin_bottom = 32.0
+text = "Species Tag"
+
+[node name="ValuesContainer" type="VBoxContainer" parent="VBoxContainer/ParametersContainer/SpeciesSection"]
+margin_left = 95.0
+margin_right = 153.0
+margin_bottom = 930.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="SpeciesNameEdit" type="LineEdit" parent="VBoxContainer/ParametersContainer/SpeciesSection/ValuesContainer"]
+margin_right = 58.0
+margin_bottom = 24.0
+
+[node name="SpeciesTagEdit" type="LineEdit" parent="VBoxContainer/ParametersContainer/SpeciesSection/ValuesContainer"]
+margin_top = 28.0
+margin_right = 58.0
+margin_bottom = 52.0
+
+[node name="GameSection" type="HBoxContainer" parent="VBoxContainer/ParametersContainer"]
+margin_left = 850.0
+margin_right = 1696.0
+margin_bottom = 930.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="OtherSection" type="HBoxContainer" parent="VBoxContainer/ParametersContainer"]
+visible = false
+margin_left = 1133.0
+margin_right = 1696.0
+margin_bottom = 930.0
+size_flags_horizontal = 3
+
+[node name="ButtonsContainer" type="HBoxContainer" parent="VBoxContainer"]
+margin_top = 934.0
+margin_right = 1696.0
+margin_bottom = 954.0
+alignment = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="StartButton" type="Button" parent="VBoxContainer/ButtonsContainer"]
+margin_left = 794.0
+margin_right = 844.0
+margin_bottom = 20.0
 text = "START"
 __meta__ = {
 "_edit_use_anchors_": false
 }
-[connection signal="pressed" from="StartButton" to="." method="_on_StartButton_pressed"]
+
+[node name="CancelButton" type="Button" parent="VBoxContainer/ButtonsContainer"]
+margin_left = 848.0
+margin_right = 902.0
+margin_bottom = 20.0
+text = "Cancel"
+[connection signal="pressed" from="VBoxContainer/ButtonsContainer/StartButton" to="." method="_on_StartButton_pressed"]

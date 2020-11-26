@@ -2,6 +2,8 @@
 extends Control
 """
 Handles displaying solar system objects
+TODO: Make this menu invisible by default and shown when button is pressed (ie. Outliner in Stellaris) so it wont take so much screen space
+all the time.
 """
 ################################################################# SIGNALS ################################################################
 ################################################################# ENUMS ##################################################################
@@ -38,6 +40,9 @@ func _on_system_changed(system_object: SolarSystem) -> void:
 
 
 func _display_objects() -> void:
+	if !_system:
+		return
+	
 	objects_tree.clear()
 #	System can contain only one star (for now)
 	var star: Star = _system.get_star()

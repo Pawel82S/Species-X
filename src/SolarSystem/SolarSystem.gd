@@ -63,13 +63,17 @@ onready var celestial_bodies := $CelestialBodies
 ################################################################# SETTERS & GETTERS ######################################################
 ################################################################# BUILT-IN METHODS #######################################################
 func _ready() -> void:
-	Event.connect("object_selected", self, "_on_object_selected")
-	generate()
+	Func.ignore_result(Event.connect("object_selected", self, "_on_object_selected"))
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_released("lmb") || event.is_action_released("rmb"):
+		pass #???
 
 
 ################################################################# PUBLIC METHODS #########################################################
-func generate() -> void:
-	var star := _generate_star(SolarNames.new().random_star_name())
+func generate(system_name: String) -> void:
+	var star := _generate_star(system_name)
 	var mass_for_planets := star.get_max_satellites_mass()
 	_calculate_zones()
 	var orbit: int = zone_range[CelestialBody.Zone.HOT].Begin
@@ -130,11 +134,8 @@ func get_star() -> Star:
 	return celestial_bodies.get_child(0) as Star
 
 
-func get_object_by_name(obj_name: String) -> SystemObject:
-	var result = null
-	var star: Star = get_star()
-	
-	return result
+func get_icon_texture() -> Texture:
+	return get_star().icon
 
 
 ################################################################# PRIVATE METHODS ########################################################
@@ -188,9 +189,15 @@ func _on_SolarSystem_visibility_changed() -> void:
 	Event.emit_signal("system_changed", param)
 	_toggle_physics(!visible)
 
+
 func _toggle_physics(disable: bool) -> void:
-#	get_tree().call_group()
-	pass
+	var star := get_star()
+	star.toggle_physics(disable)
+	
+	for planet in star.get_satellites():
+		planet.toggle_physics(disable)
+		for moon in planet.get_satellites():
+			moon.toggle_physics(disable)
 
 
 func _on_object_selected(object_name: String) -> void:
