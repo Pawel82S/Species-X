@@ -1,18 +1,20 @@
 #class_name
 extends Control
 """
-Handles displaying solar system objects
-TODO: Make this menu invisible by default and shown when button is pressed (ie. Outliner in Stellaris) so it wont take so much screen space
-all the time.
+To control what content is displayed set solar_system variable to SolarSystem object you want to show or set it to null for Galaxy overveiw.
 """
 ################################################################# SIGNALS ################################################################
+signal object_selected(outliner_mode, object_name)
+
 ################################################################# ENUMS ##################################################################
 ################################################################# CONSTANTS ##############################################################
 ################################################################# EXPORT VAR #############################################################
 ################################################################# PUBLIC VAR #############################################################
-################################################################# PRIVATE VAR ############################################################
-var _system: SolarSystem = null
+var solar_systems := {} setget set_solar_system
+var system_name := "" setget set_system_name
 
+################################################################# PRIVATE VAR ############################################################
+var _mode: int = Const.OutlinerMode.GALAXY_VIEW
 
 ################################################################# ONREADY VAR ############################################################
 onready var filter_edit := $VBoxContainer/FilterEdit
@@ -20,41 +22,62 @@ onready var objects_tree := $VBoxContainer/ObjectsTree
 
 
 ################################################################# SETTERS & GETTERS ######################################################
-################################################################# BUILT-IN METHODS #######################################################
-func _ready() -> void:
-	Func.ignore_result(Event.connect("system_changed", self, "_on_system_changed"))
+func set_solar_system(val: Dictionary) -> void:
+	assert(!val.empty(), "Assigning empty dictionary")
+	solar_systems = val
+	update_gui()
 
 
-################################################################# PUBLIC METHODS #########################################################
-################################################################# PRIVATE METHODS ########################################################
-func _on_system_changed(system_object: SolarSystem) -> void:
-	if !system_object:
-		visible = false
-		objects_tree.clear()
-		filter_edit.clear()
-		_system = null
-		return
+func set_system_name(val: String) -> void:
+	system_name = val
 	
-	_system = system_object
-	_display_objects()
+	if val.empty():
+		_mode = Const.OutlinerMode.GALAXY_VIEW
+	else:
+		_mode = Const.OutlinerMode.SYSTEM_VIEW
+	
+	update_gui()
 
 
-func _display_objects() -> void:
-	if !_system:
+################################################################# BUILT-IN METHODS #######################################################
+################################################################# PUBLIC METHODS #########################################################
+func update_gui() -> void:
+	if !visible:
 		return
 	
 	objects_tree.clear()
-#	System can contain only one star (for now)
-	var star: Star = _system.get_star()
+	
+	match _mode:
+		Const.OutlinerMode.GALAXY_VIEW:
+			_display_galaxy_objects()
+		
+		Const.OutlinerMode.SYSTEM_VIEW:
+			_display_system_objects()
+		
+		_: assert(false, "Invalid mode %d" % _mode)
+
+
+################################################################# PRIVATE METHODS ########################################################
+func _display_galaxy_objects() -> void:
+	var root = objects_tree.create_item()
+	objects_tree.hide_root = true
+	for sys_name in solar_systems.keys():
+		print(sys_name)
+		var system_item = objects_tree.create_item(root)
+		system_item.set_text(0, sys_name)
+
+
+func _display_system_objects() -> void:
+	var star: Star = solar_systems[system_name].get_star()
 	var root = objects_tree.create_item()
 	objects_tree.hide_root = true
 	var star_item = objects_tree.create_item(root)
 	star_item.set_text(0, star.name)
-	
+
 	for planet in star.get_satellites():
 		var planet_item = objects_tree.create_item(star_item)
 		planet_item.set_text(0, planet.name)
-		
+
 		for moon in planet.get_satellites():
 			if filter_edit.text.empty() || filter_edit.text.is_subsequence_of(moon.name):
 				var moon_item = objects_tree.create_item(planet_item)
@@ -62,12 +85,12 @@ func _display_objects() -> void:
 
 
 func _on_FilterEdit_text_changed(_new_text: String) -> void:
-	_display_objects()
+	update_gui()
 
 
 func _on_ObjectsTree_item_selected() -> void:
 	var item_name: String = objects_tree.get_selected().get_text(objects_tree.get_selected_column())
-	Event.emit_signal("object_selected", item_name)
+	emit_signal("object_selected", _mode, item_name)
 
 
 func _on_ObjectsTree_nothing_selected() -> void:

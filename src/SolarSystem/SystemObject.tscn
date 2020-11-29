@@ -1,16 +1,11 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://src/SolarSystem/SystemObject.gd" type="Script" id=1]
 [ext_resource path="res://icon.png" type="Texture" id=2]
-[ext_resource path="res://assets/Fonts/Timeburner/timeburnerbold.ttf" type="DynamicFontData" id=3]
 
 [sub_resource type="CircleShape2D" id=1]
 
-[sub_resource type="DynamicFont" id=2]
-size = 24
-font_data = ExtResource( 3 )
-
-[sub_resource type="Animation" id=3]
+[sub_resource type="Animation" id=2]
 length = 4.0
 loop = true
 tracks/0/type = "value"
@@ -46,7 +41,6 @@ margin_top = 43.968
 margin_right = 47.0
 margin_bottom = 57.968
 grow_horizontal = 2
-custom_fonts/font = SubResource( 2 )
 text = "System Object"
 align = 1
 __meta__ = {
@@ -57,6 +51,6 @@ __meta__ = {
 visible = false
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-anims/illuminate = SubResource( 3 )
+anims/illuminate = SubResource( 2 )
 [connection signal="screen_entered" from="VisibilityEnabler2D" to="." method="_on_VisibilityEnabler2D_screen_entered"]
 [connection signal="screen_exited" from="VisibilityEnabler2D" to="." method="_on_VisibilityEnabler2D_screen_exited"]

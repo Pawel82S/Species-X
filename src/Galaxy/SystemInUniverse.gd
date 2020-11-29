@@ -10,13 +10,16 @@ Script description
 ################################################################# PUBLIC VAR #############################################################
 ################################################################# PRIVATE VAR ############################################################
 var _system: SolarSystem = null
+
 ################################################################# ONREADY VAR ############################################################
 onready var sprite := $Sprite
 onready var name_label := $NameLabel
+
 ################################################################# SETTERS & GETTERS ######################################################
 ################################################################# BUILT-IN METHODS #######################################################
 ################################################################# PUBLIC METHODS #########################################################
 func assign_system(system: SolarSystem) -> void:
+	name = system.name
 	sprite.texture = system.get_icon_texture()
 	sprite.self_modulate = system.get_star().color
 	name_label.text = system.name
@@ -24,6 +27,6 @@ func assign_system(system: SolarSystem) -> void:
 
 
 ################################################################# PRIVATE METHODS ########################################################
-func _on_SystemInUniverse_input_event(viewport: Node, event: InputEvent, shape_idx: int) -> void:
+func _on_SystemInUniverse_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
 	if event.is_action_released("lmb"):
 		Event.emit_signal("show_system", _system)

@@ -1,7 +1,9 @@
 extends Node
 
-const GRAVITATIONAL := 6.6743 * pow(10, -2)
-const ORBITAL_SPEED_DIVIDER := 10_000
+enum OutlinerMode {
+	GALAXY_VIEW,
+	SYSTEM_VIEW,
+}
 
 const RANDOM = -100
 const SQRT_2 = sqrt(2)

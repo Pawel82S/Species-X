@@ -1,5 +1,5 @@
 #class_name
-extends Control
+extends Node
 """
 Script description
 """
@@ -10,24 +10,7 @@ Script description
 ################################################################# PUBLIC VAR #############################################################
 ################################################################# PRIVATE VAR ############################################################
 ################################################################# ONREADY VAR ############################################################
-""" Species Section """
-
-""" Game Section """
-onready var systems_amount_label := $VBoxContainer/ParametersContainer/GameSection/LabelsAndValues/LabelsContainer/SystemsAmountLabel
-
-""" Other Section """
 ################################################################# SETTERS & GETTERS ######################################################
 ################################################################# BUILT-IN METHODS #######################################################
 ################################################################# PUBLIC METHODS #########################################################
 ################################################################# PRIVATE METHODS ########################################################
-func _on_StartButton_pressed() -> void:
-	Func.ignore_result(get_tree().change_scene("res://src/Game/Main.tscn"))
-
-
-func _on_CancelButton_pressed() -> void:
-	Func.ignore_result(get_tree().change_scene("res://src/GUI/MainMenu.tscn"))
-
-
-func _on_SystemsAmountSlider_value_changed(value: float) -> void:
-	Data.game.SolarSystems = value
-	systems_amount_label.text = "Solar Systems (%d)" % int(value)

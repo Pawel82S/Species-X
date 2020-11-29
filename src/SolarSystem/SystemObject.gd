@@ -38,16 +38,12 @@ var object_name := "" setget set_object_name
 var object_orbit := 0 setget set_object_orbit
 var object_radius := 1 setget set_object_radius
 var object_mass := 1 setget set_object_mass
-var object_rotation_speed := 0.0
 var object_temperature := 0.0	# in celsius
 var object_description := ""
 var object_user_comment := ""
 
 
 ################################################################# PRIVATE VAR ############################################################
-var _delta_time := 0.0
-
-
 ################################################################# ONREADY VAR ############################################################
 onready var body := $Area2D
 onready var collision_shape := $Area2D/CollisionShape2D
@@ -94,14 +90,6 @@ func _ready() -> void:
 	set_object_radius(object_radius)
 
 
-func _physics_process(delta: float) -> void:
-	orbital_movement(delta)
-
-
-func _process(delta: float) -> void:
-	_progress_time(delta)
-
-
 ################################################################# PUBLIC METHODS #########################################################
 func get_object_type_as_str() -> String:
 	var result := ""
@@ -112,11 +100,6 @@ func get_object_type_as_str() -> String:
 		ObjectType.MOON: result = "moon"
 	
 	return result
-
-
-func orbital_movement(delta: float) -> void:
-	rotation += object_rotation_speed * delta
-	body.rotation = -rotation
 
 
 func can_have_satellites() -> bool:
@@ -140,29 +123,8 @@ func get_max_satellites_mass() -> int:
 	return int(object_mass * SATELLITES_MASS_FACTOR)
 
 
-func set_orbit_parameters_for(parent: SystemObject) -> void:
-	assert(object_orbit > 0, "Orbit must be greater than zero. You entered: %d" % object_orbit)
-	var total_mass := parent.object_mass + object_mass
-	object_rotation_speed = sqrt(Const.GRAVITATIONAL * total_mass / object_orbit) / Const.ORBITAL_SPEED_DIVIDER
-	
-	match object_type:
-		ObjectType.PLANET:
-			object_rotation_speed /= 10
-		ObjectType.MOON:
-			object_rotation_speed *= 10
-	
-	object_rotation_speed *= 1 if randf() < 0.5 else -1
-
-
 func toggle_physics(disable: bool) -> void:
 	collision_shape.disabled = disable
-	set_physics_process(!disable) # This will disable orbital movement of all celestial bodies
-	set_process(disable)
-	
-	# If physics processing is enabled again I will apply time that passed since last system visit to orbital movement of solar body
-	if !disable:
-		orbital_movement(_delta_time)
-		_delta_time = 0
 
 
 ################################################################# PRIVATE METHODS ########################################################
@@ -171,12 +133,6 @@ func _rescale_sprite() -> void:
 	var scale_width: float = body_diameter / sprite.texture.get_width()
 	var scale_height: float = body_diameter / sprite.texture.get_height()
 	sprite.scale = Vector2(scale_width, scale_height)
-
-
-func _progress_time(delta: float) -> void:
-	_delta_time += delta
-	if _delta_time > 1:
-		_delta_time -= 1
 
 
 func _on_VisibilityEnabler2D_screen_entered() -> void:

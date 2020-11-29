@@ -1,4 +1,4 @@
-class_name MainCamera
+#class_name MainCamera
 extends Camera2D
 """
 Camera can operate in 4 different modes:
@@ -26,7 +26,7 @@ const MAX_ZOOM = Vector2(10, 10)
 
 ################################################################# EXPORT VAR #############################################################
 ################################################################# PUBLIC VAR #############################################################
-var follow_object = null setget set_follow_object
+var follow_position: Vector2 = Vector2.ZERO setget set_follow_position
 
 ################################################################# PRIVATE VAR ############################################################
 var _mode: int = Mode.FOLLOW_INPUT
@@ -34,16 +34,12 @@ var _direction := Vector2.ZERO
 
 ################################################################# ONREADY VAR ############################################################
 ################################################################# SETTERS & GETTERS ######################################################
-func set_follow_object(val) -> void:
-	follow_object = val
+func set_follow_position(val: Vector2) -> void:
+	follow_position = val
 	_mode = Mode.FOLLOW_OBJECT if val else Mode.FOLLOW_INPUT
 
 
 ################################################################# BUILT-IN METHODS #######################################################
-func _ready() -> void:
-	Var.current_camera = self
-
-
 func _physics_process(delta: float) -> void:
 	if _direction != Vector2.ZERO:
 		_mode = Mode.FOLLOW_INPUT
@@ -53,15 +49,16 @@ func _physics_process(delta: float) -> void:
 			position += _direction * MOVE_SPEED * delta
 		
 		Mode.FOLLOW_OBJECT:
-			global_position = follow_object.body.global_position
+			global_position = follow_position
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if _mode == Mode.FOLLOW_INPUT:
-		_direction = Vector2(
-						Input.get_action_strength("ui_right") - Input.get_action_strength("ui_left"),
-						Input.get_action_strength("ui_down") - Input.get_action_strength("ui_up")
-					).normalized()
+	_direction = Vector2(
+					Input.get_action_strength("ui_right") - Input.get_action_strength("ui_left"),
+					Input.get_action_strength("ui_down") - Input.get_action_strength("ui_up")
+				).normalized()
+	if _direction != Vector2.ZERO:
+		_mode = Mode.FOLLOW_INPUT
 	
 	if event.is_action("ZoomOut"):
 		zoom -= ZOOM_VEC

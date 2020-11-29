@@ -95,13 +95,10 @@ func generate(system_name: String) -> void:
 				mass_for_moons -= moon.object_mass
 				moon.object_orbit = moon_orbit
 				orbit += moon_orbit
-				moon.set_orbit_parameters_for(planet)
 			
 			# Check if we added some moons and move planet orbit if it's true to avoid moons on orbits crossing onther planets or star
 			if moon_orbit != planet.object_radius:
 				planet.object_orbit += moon_orbit
-			
-			planet.set_orbit_parameters_for(star)
 		else:
 			break
 	

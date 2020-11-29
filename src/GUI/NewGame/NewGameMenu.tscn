@@ -26,60 +26,145 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="SpeciesSection" type="HBoxContainer" parent="VBoxContainer/ParametersContainer"]
+[node name="SpeciesSection" type="VBoxContainer" parent="VBoxContainer/ParametersContainer"]
 margin_right = 846.0
 margin_bottom = 930.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="LabelsContainer" type="VBoxContainer" parent="VBoxContainer/ParametersContainer/SpeciesSection"]
-margin_right = 91.0
-margin_bottom = 930.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="SpeciesNameLabel" type="Label" parent="VBoxContainer/ParametersContainer/SpeciesSection/LabelsContainer"]
-margin_right = 91.0
+[node name="Label" type="Label" parent="VBoxContainer/ParametersContainer/SpeciesSection"]
+margin_right = 846.0
 margin_bottom = 14.0
-text = "Species Name"
+text = "Species parameters"
+align = 1
 
-[node name="SpeciesTAGLabel" type="Label" parent="VBoxContainer/ParametersContainer/SpeciesSection/LabelsContainer"]
+[node name="LabelsAndValues" type="HBoxContainer" parent="VBoxContainer/ParametersContainer/SpeciesSection"]
 margin_top = 18.0
-margin_right = 91.0
-margin_bottom = 32.0
-text = "Species Tag"
+margin_right = 846.0
+margin_bottom = 70.0
+size_flags_horizontal = 3
 
-[node name="ValuesContainer" type="VBoxContainer" parent="VBoxContainer/ParametersContainer/SpeciesSection"]
-margin_left = 95.0
-margin_right = 153.0
-margin_bottom = 930.0
+[node name="LabelsContainer" type="VBoxContainer" parent="VBoxContainer/ParametersContainer/SpeciesSection/LabelsAndValues"]
+margin_right = 91.0
+margin_bottom = 52.0
+size_flags_vertical = 3
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="SpeciesNameEdit" type="LineEdit" parent="VBoxContainer/ParametersContainer/SpeciesSection/ValuesContainer"]
-margin_right = 58.0
+[node name="SpeciesNameLabel" type="Label" parent="VBoxContainer/ParametersContainer/SpeciesSection/LabelsAndValues/LabelsContainer"]
+margin_right = 91.0
 margin_bottom = 24.0
+size_flags_vertical = 3
+text = "Species Name"
+align = 2
+valign = 1
 
-[node name="SpeciesTagEdit" type="LineEdit" parent="VBoxContainer/ParametersContainer/SpeciesSection/ValuesContainer"]
+[node name="SpeciesTAGLabel" type="Label" parent="VBoxContainer/ParametersContainer/SpeciesSection/LabelsAndValues/LabelsContainer"]
 margin_top = 28.0
-margin_right = 58.0
+margin_right = 91.0
 margin_bottom = 52.0
+size_flags_vertical = 3
+text = "Species Tag"
+align = 2
+valign = 1
 
-[node name="GameSection" type="HBoxContainer" parent="VBoxContainer/ParametersContainer"]
+[node name="ValuesContainer" type="VBoxContainer" parent="VBoxContainer/ParametersContainer/SpeciesSection/LabelsAndValues"]
+margin_left = 95.0
+margin_right = 846.0
+margin_bottom = 52.0
+size_flags_horizontal = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="SpeciesNameEdit" type="LineEdit" parent="VBoxContainer/ParametersContainer/SpeciesSection/LabelsAndValues/ValuesContainer"]
+margin_right = 751.0
+margin_bottom = 24.0
+text = "Human"
+max_length = 35
+
+[node name="SpeciesTagEdit" type="LineEdit" parent="VBoxContainer/ParametersContainer/SpeciesSection/LabelsAndValues/ValuesContainer"]
+margin_top = 28.0
+margin_right = 751.0
+margin_bottom = 52.0
+text = "HUM"
+max_length = 3
+
+[node name="GameSection" type="VBoxContainer" parent="VBoxContainer/ParametersContainer"]
 margin_left = 850.0
 margin_right = 1696.0
 margin_bottom = 930.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="OtherSection" type="HBoxContainer" parent="VBoxContainer/ParametersContainer"]
+[node name="Label" type="Label" parent="VBoxContainer/ParametersContainer/GameSection"]
+margin_right = 846.0
+margin_bottom = 14.0
+text = "Game parameters"
+align = 1
+
+[node name="LabelsAndValues" type="HBoxContainer" parent="VBoxContainer/ParametersContainer/GameSection"]
+margin_top = 18.0
+margin_right = 846.0
+margin_bottom = 62.0
+size_flags_horizontal = 3
+
+[node name="LabelsContainer" type="VBoxContainer" parent="VBoxContainer/ParametersContainer/GameSection/LabelsAndValues"]
+margin_right = 110.0
+margin_bottom = 44.0
+size_flags_vertical = 3
+
+[node name="GalaxyNameLabel" type="Label" parent="VBoxContainer/ParametersContainer/GameSection/LabelsAndValues/LabelsContainer"]
+margin_right = 110.0
+margin_bottom = 20.0
+size_flags_vertical = 3
+text = "Galaxy Name"
+align = 2
+valign = 1
+
+[node name="SystemsAmountLabel" type="Label" parent="VBoxContainer/ParametersContainer/GameSection/LabelsAndValues/LabelsContainer"]
+margin_top = 24.0
+margin_right = 110.0
+margin_bottom = 44.0
+size_flags_vertical = 3
+text = "Star Systems (10)"
+valign = 1
+
+[node name="ValuesContainer" type="VBoxContainer" parent="VBoxContainer/ParametersContainer/GameSection/LabelsAndValues"]
+margin_left = 114.0
+margin_right = 846.0
+margin_bottom = 44.0
+size_flags_horizontal = 3
+
+[node name="GalaxyNameEdit" type="LineEdit" parent="VBoxContainer/ParametersContainer/GameSection/LabelsAndValues/ValuesContainer"]
+margin_right = 732.0
+margin_bottom = 24.0
+text = "Milky Way"
+max_length = 35
+
+[node name="SystemsAmountSlider" type="HSlider" parent="VBoxContainer/ParametersContainer/GameSection/LabelsAndValues/ValuesContainer"]
+margin_top = 28.0
+margin_right = 732.0
+margin_bottom = 44.0
+min_value = 10.0
+value = 10.0
+rounded = true
+tick_count = 10
+ticks_on_borders = true
+
+[node name="OtherSection" type="VBoxContainer" parent="VBoxContainer/ParametersContainer"]
 visible = false
 margin_left = 1133.0
 margin_right = 1696.0
 margin_bottom = 930.0
 size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="VBoxContainer/ParametersContainer/OtherSection"]
+margin_right = 563.0
+margin_bottom = 14.0
+text = "Other parameters"
+align = 1
 
 [node name="ButtonsContainer" type="HBoxContainer" parent="VBoxContainer"]
 margin_top = 934.0
@@ -104,4 +189,6 @@ margin_left = 848.0
 margin_right = 902.0
 margin_bottom = 20.0
 text = "Cancel"
+[connection signal="value_changed" from="VBoxContainer/ParametersContainer/GameSection/LabelsAndValues/ValuesContainer/SystemsAmountSlider" to="." method="_on_SystemsAmountSlider_value_changed"]
 [connection signal="pressed" from="VBoxContainer/ButtonsContainer/StartButton" to="." method="_on_StartButton_pressed"]
+[connection signal="pressed" from="VBoxContainer/ButtonsContainer/CancelButton" to="." method="_on_CancelButton_pressed"]

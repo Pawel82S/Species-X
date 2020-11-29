@@ -1,5 +1,4 @@
 extends Node
 
-signal system_changed(system_object)
-signal object_selected(object_name)
-signal show_system(system)
+#signal system_changed(system_object)
+#signal show_system(system)

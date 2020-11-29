@@ -14,15 +14,15 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://src/SolarSystem/CelestialBody.gd"
 }, {
-"base": "Camera2D",
-"class": "MainCamera",
+"base": "Node2D",
+"class": "Galaxy",
 "language": "GDScript",
-"path": "res://src/Game/Camera2D.gd"
+"path": "res://src/Galaxy/Galaxy.gd"
 }, {
 "base": "Reference",
 "class": "SolarNames",
 "language": "GDScript",
-"path": "res://src/Universe/SolarNames.gd"
+"path": "res://src/Galaxy/SolarNames.gd"
 }, {
 "base": "Node2D",
 "class": "SolarSystem",
@@ -41,7 +41,7 @@ _global_script_classes=[ {
 } ]
 _global_script_class_icons={
 "CelestialBody": "",
-"MainCamera": "",
+"Galaxy": "",
 "SolarNames": "",
 "SolarSystem": "",
 "Star": "",
@@ -59,6 +59,7 @@ config/icon="res://icon.png"
 
 Const="*res://src/Autoloads/Constants.gd"
 Var="*res://src/Autoloads/Variables.gd"
+Data="*res://src/Autoloads/Data.gd"
 Func="*res://src/Autoloads/Functions.gd"
 Event="*res://src/Autoloads/Events.gd"
 
@@ -77,7 +78,7 @@ texture={
 "compress/normal_map": 0,
 "detect_3d": false,
 "flags/anisotropic": false,
-"flags/filter": false,
+"flags/filter": true,
 "flags/mipmaps": false,
 "flags/repeat": 0,
 "flags/srgb": 2,
