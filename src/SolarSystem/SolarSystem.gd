@@ -67,8 +67,8 @@ func _ready() -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_released("lmb") || event.is_action_released("rmb"):
-		pass #???
+	if event.is_action("galaxy_map"):
+		visible = false
 
 
 ################################################################# PUBLIC METHODS #########################################################
@@ -102,7 +102,7 @@ func generate(system_name: String) -> void:
 		else:
 			break
 	
-	print("This system has %d planets and %d moons" % [get_planets_count(), get_moons_count()])
+	print("%s system has %d planets and %d moons" % [name, get_planets_count(), get_moons_count()])
 
 
 # If system has special star, then radius is equal to hot zone end
@@ -133,6 +133,23 @@ func get_star() -> Star:
 
 func get_icon_texture() -> Texture:
 	return get_star().icon
+
+
+func get_object_position(object_name: String) -> Vector2:
+	var star := get_star()
+	var result := star.global_position
+	if star.object_name != object_name:
+		for planet in star.get_satellites():
+			if planet.object_name == object_name:
+				result = planet.body.global_position
+				break
+			
+			for moon in planet.get_satellites():
+				if moon.object_name == object_name:
+					result = moon.body.global_position
+					return result
+	
+	return result
 
 
 ################################################################# PRIVATE METHODS ########################################################
@@ -177,6 +194,7 @@ func _generate_satellite(parent: SystemObject, type: int, zone: int, max_mass: i
 	parent.add_satellite(result)
 	result.object_name = "%s-%d" % [parent.object_name, parent.get_satellites_count()]
 	result.rotation_degrees = randi() % 360
+	result.body.rotation_degrees = -result.rotation_degrees
 	result.generate(type, zone, max_mass)	
 	return result
 
@@ -195,23 +213,3 @@ func _toggle_physics(disable: bool) -> void:
 		planet.toggle_physics(disable)
 		for moon in planet.get_satellites():
 			moon.toggle_physics(disable)
-
-
-func _on_object_selected(object_name: String) -> void:
-	if !visible:
-		# Do not seach for object if system isn't displayed on screen
-		return
-	
-	var star := get_star()
-	if star.name == object_name:
-		Var.current_camera.follow_object = star
-	else:
-		for planet in star.get_satellites():
-			if planet.name == object_name:
-				Var.current_camera.follow_object = planet
-				break
-			
-			for moon in planet.get_satellites():
-				if moon.name == object_name:
-					Var.current_camera.follow_object = moon
-					return

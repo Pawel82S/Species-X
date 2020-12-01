@@ -9,8 +9,6 @@ Script description
 ################################################################# EXPORT VAR #############################################################
 ################################################################# PUBLIC VAR #############################################################
 ################################################################# PRIVATE VAR ############################################################
-var _system: SolarSystem = null
-
 ################################################################# ONREADY VAR ############################################################
 onready var sprite := $Sprite
 onready var name_label := $NameLabel
@@ -23,10 +21,9 @@ func assign_system(system: SolarSystem) -> void:
 	sprite.texture = system.get_icon_texture()
 	sprite.self_modulate = system.get_star().color
 	name_label.text = system.name
-	_system = system
 
 
 ################################################################# PRIVATE METHODS ########################################################
 func _on_SystemInUniverse_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
 	if event.is_action_released("lmb"):
-		Event.emit_signal("show_system", _system)
+		Event.emit_signal("show_system", name)

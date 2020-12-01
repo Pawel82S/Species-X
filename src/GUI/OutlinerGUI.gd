@@ -5,6 +5,7 @@ To control what content is displayed set solar_system variable to SolarSystem ob
 """
 ################################################################# SIGNALS ################################################################
 signal object_selected(outliner_mode, object_name)
+#signal show_system(system_name)
 
 ################################################################# ENUMS ##################################################################
 ################################################################# CONSTANTS ##############################################################
@@ -14,7 +15,7 @@ var solar_systems := {} setget set_solar_system
 var system_name := "" setget set_system_name
 
 ################################################################# PRIVATE VAR ############################################################
-var _mode: int = Const.OutlinerMode.GALAXY_VIEW
+var _mode: int = Const.OutlinerMode.GALAXY_VIEW setget set_mode
 
 ################################################################# ONREADY VAR ############################################################
 onready var filter_edit := $VBoxContainer/FilterEdit
@@ -30,16 +31,26 @@ func set_solar_system(val: Dictionary) -> void:
 
 func set_system_name(val: String) -> void:
 	system_name = val
-	
-	if val.empty():
-		_mode = Const.OutlinerMode.GALAXY_VIEW
-	else:
-		_mode = Const.OutlinerMode.SYSTEM_VIEW
-	
+	_mode = Const.OutlinerMode.SYSTEM_VIEW
+	update_gui()
+
+
+func set_mode(val: int) -> void:
+	assert(val in Const.OutlinerMode.values(), "Unknown mode %d" % val)
+	_mode = val
 	update_gui()
 
 
 ################################################################# BUILT-IN METHODS #######################################################
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action("ui_cancel"):
+		filter_edit.focus_mode = Control.FOCUS_NONE
+		filter_edit.focus_mode = Control.FOCUS_CLICK
+	elif event.is_action("galaxy_map"):
+		_mode = Const.OutlinerMode.GALAXY_VIEW
+		update_gui()
+
+
 ################################################################# PUBLIC METHODS #########################################################
 func update_gui() -> void:
 	if !visible:
@@ -62,7 +73,6 @@ func _display_galaxy_objects() -> void:
 	var root = objects_tree.create_item()
 	objects_tree.hide_root = true
 	for sys_name in solar_systems.keys():
-		print(sys_name)
 		var system_item = objects_tree.create_item(root)
 		system_item.set_text(0, sys_name)
 

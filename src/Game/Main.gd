@@ -26,18 +26,23 @@ onready var camera := $Camera2D
 ################################################################# SETTERS & GETTERS ######################################################
 ################################################################# BUILT-IN METHODS #######################################################
 func _ready() -> void:
+	Func.ignore_result(Event.connect("show_system", self, "_on_show_system"))
+	create_game()
+
+
+################################################################# PUBLIC METHODS #########################################################
+func create_game() -> void:
 	galaxy.name = Data.game.GalaxyName
 	_create_solar_systems(Data.game.SolarSystems)
 	outliner.solar_systems = _systems
 
 
-################################################################# PUBLIC METHODS #########################################################
 ################################################################# PRIVATE METHODS ########################################################
 func _create_solar_systems(amount: int) -> void:
 	var names := SolarNames.new()
 	for _i in range(amount):
 		var system: SolarSystem = SCN_SOLAR_SYSTEM.instance()
-		_add_system(system)
+		solar_systems.add_child(system)
 		system.generate(names.random_star_name())
 		_systems[system.name] = system
 		_total_planets += system.get_planets_count()
@@ -46,14 +51,17 @@ func _create_solar_systems(amount: int) -> void:
 		galaxy.place_system_on_grid(system)
 
 
-func _add_system(sys: SolarSystem) -> void:
-	solar_systems.add_child(sys)
-
-
 func _on_Outliner_object_selected(outliner_mode: int, object_name: String) -> void:
 	match outliner_mode:
 		Const.OutlinerMode.GALAXY_VIEW:
 			camera.follow_position = galaxy.solar_systems.get_node(object_name).global_position
 		
 		Const.OutlinerMode.SYSTEM_VIEW:
-			pass
+			camera.follow_position = _systems[outliner.system_name].get_object_position(object_name)
+
+
+func _on_show_system(system_name: String) -> void:
+	galaxy.visible = false
+	camera.global_position = Vector2.ZERO
+	outliner.system_name = system_name
+	_systems[system_name].visible = true

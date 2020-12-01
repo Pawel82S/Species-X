@@ -24,7 +24,7 @@ visible = false
 
 [node name="Outliner" parent="GUILayer" instance=ExtResource( 5 )]
 show_behind_parent = true
-anchor_left = 0.8
+anchor_left = 0.9
 
 [node name="Camera2D" parent="." instance=ExtResource( 7 )]
 [connection signal="object_selected" from="GUILayer/Outliner" to="." method="_on_Outliner_object_selected"]

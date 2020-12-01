@@ -6,7 +6,7 @@ Script description
 ################################################################# SIGNALS ################################################################
 ################################################################# ENUMS ##################################################################
 ################################################################# CONSTANTS ##############################################################
-const SCN_SYSTEM_IN_UNIV := preload("res://src/Galaxy/SystemInUniverse.tscn")
+const SCN_SYSTEM_REPRESENTATION := preload("res://src/Galaxy/SystemRepresentation.tscn")
 const GRID_SIZE := 55	# This gives us 55x55 = 3025 possible locations for systems
 const HALF_GRID_SIZE := int(GRID_SIZE / 2)
 const CENTER_SIZE := 5	# This must be odd number
@@ -23,8 +23,12 @@ onready var solar_systems := $SolarSystems
 ################################################################# SETTERS & GETTERS ######################################################
 ################################################################# BUILT-IN METHODS #######################################################
 func _ready() -> void:
-	Func.ignore_result(Event.connect("show_system", self, "_on_show_system"))
 	_create_grid()
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action("galaxy_map"):
+		visible = true
 
 
 ################################################################# PUBLIC METHODS #########################################################
@@ -37,7 +41,7 @@ func place_system_on_grid(system: SolarSystem) -> void:
 	
 	var pos := Vector2(x, y)
 	_grid[pos] = system
-	var system_icon := SCN_SYSTEM_IN_UNIV.instance()
+	var system_icon := SCN_SYSTEM_REPRESENTATION.instance()
 	solar_systems.add_child(system_icon)
 	system_icon.assign_system(system)
 	system_icon.position = pos * GRID_DISTANCE
@@ -59,9 +63,3 @@ static func _is_galaxy_center(pos: Vector2, size: int) -> bool:
 		return true
 	else:
 		return false
-
-
-
-func _on_show_system(system: SolarSystem) -> void:
-	visible = false
-	system.visible = true

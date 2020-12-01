@@ -32,6 +32,7 @@ self_modulate = Color( 1, 1, 1, 0.658824 )
 margin_top = 28.0
 margin_right = 1696.0
 margin_bottom = 954.0
+focus_mode = 0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 [connection signal="text_changed" from="VBoxContainer/FilterEdit" to="." method="_on_FilterEdit_text_changed"]
