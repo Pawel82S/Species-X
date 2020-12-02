@@ -21,8 +21,8 @@ enum PlanetSeparation {
 }
 
 enum MoonSeparation {
-	MIN = 2_000,
-	MAX = 3_000
+	MIN = 600,
+	MAX = 950
 }
 
 ################################################################# CONSTANTS ##############################################################
@@ -137,7 +137,7 @@ func get_icon_texture() -> Texture:
 
 func get_object_position(object_name: String) -> Vector2:
 	var star := get_star()
-	var result := star.global_position
+	var result: Vector2 = star.body.global_position
 	if star.object_name != object_name:
 		for planet in star.get_satellites():
 			if planet.object_name == object_name:

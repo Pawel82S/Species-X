@@ -49,6 +49,8 @@ func _create_solar_systems(amount: int) -> void:
 		_total_moons += system.get_moons_count()
 		system.visible = false
 		galaxy.place_system_on_grid(system)
+	
+	print("Generated %d planets and %d moons in total" % [_total_planets, _total_moons])
 
 
 func _on_Outliner_object_selected(outliner_mode: int, object_name: String) -> void:

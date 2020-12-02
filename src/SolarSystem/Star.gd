@@ -195,7 +195,6 @@ func _generate_magnetar_star() -> void:
 	object_description = DATA.Description.Magnetar
 	# This is neutron star so we will use generic neutron star generation code for now
 	_generate_neutron_star()
-	print("Magnetar star generation not fully implemented")
 
 
 func _generate_pulsar_star() -> void:
@@ -206,7 +205,6 @@ func _generate_pulsar_star() -> void:
 	object_description = DATA.Description.Pulsar
 	# This is neutron star so we will use generic neutron star generation code for now
 	_generate_neutron_star()
-	print("Pulsar star generation not fully implemented")
 
 
 func _generate_magnetar_pulsar() -> void:
@@ -217,7 +215,6 @@ func _generate_magnetar_pulsar() -> void:
 	object_description = DATA.Description.MagnetarPulsar
 	# This is neutron star so we will use generic neutron star generation code for now
 	_generate_neutron_star()
-	print("Magnetar + Pulsar star generation not fully implemented")
 
 
 func _generate_neutron_star() -> void:
@@ -240,7 +237,6 @@ func _generate_black_hole() -> void:
 	satellites.visible = false
 	object_mass = int(INF)
 	self.object_radius = 128
-	print("Black hole generation not fully implemented")
 
 
 func _generate_star_a() -> void:
@@ -254,7 +250,6 @@ func _generate_star_a() -> void:
 	object_mass = Func.randi_from_range(min_mass, max_mass)
 	# Size of stars is dependent on their object_mass (bigger object_mass, bigger star)
 	self.object_radius = int(range_lerp(object_mass, min_mass, max_mass, DEFAULT_SUN_RADIUS * 1.4, DEFAULT_SUN_RADIUS * 1.8))
-	print("Star subtype A generation not fully implemented")
 
 
 func _generate_star_b() -> void:
@@ -268,7 +263,6 @@ func _generate_star_b() -> void:
 	object_mass = Func.randi_from_range(min_mass, max_mass)
 	# Size of stars is dependent on their object_mass (bigger object_mass, bigger star)
 	self.object_radius = int(range_lerp(object_mass, min_mass, max_mass, DEFAULT_SUN_RADIUS * 1.8, DEFAULT_SUN_RADIUS * 3))
-	print("Star subtype B generation not fully implemented")
 
 
 func _generate_star_f() -> void:
@@ -282,7 +276,6 @@ func _generate_star_f() -> void:
 	object_mass = Func.randi_from_range(min_mass, max_mass)
 	# Size of stars is dependent on their object_mass (bigger object_mass, bigger star)
 	self.object_radius = int(range_lerp(object_mass, min_mass, max_mass, DEFAULT_SUN_RADIUS * 1.15, DEFAULT_SUN_RADIUS * 1.4))
-	print("Star subtype F generation not fully implemented")
 
 
 func _generate_star_g() -> void:
@@ -296,7 +289,6 @@ func _generate_star_g() -> void:
 	object_mass = Func.randi_from_range(min_mass, max_mass)
 	# Size of stars is dependent on their object_mass (bigger object_mass, bigger star)
 	self.object_radius = int(range_lerp(object_mass, min_mass, max_mass, DEFAULT_SUN_RADIUS * 0.96, DEFAULT_SUN_RADIUS * 1.15))
-	print("Star subtype G generation not fully implemented")
 
 
 func _generate_star_k() -> void:
@@ -310,7 +302,6 @@ func _generate_star_k() -> void:
 	object_mass = Func.randi_from_range(min_mass, max_mass)
 	# Size of stars is dependent on their object_mass (bigger object_mass, bigger star)
 	self.object_radius = int(range_lerp(object_mass, min_mass, max_mass, DEFAULT_SUN_RADIUS * 0.7, DEFAULT_SUN_RADIUS * 0.96))
-	print("Star subtype K generation not fully implemented")
 
 
 func _generate_star_m() -> void:
@@ -325,7 +316,6 @@ func _generate_star_m() -> void:
 	# Size of stars is dependent on their object_mass (bigger object_mass, bigger star)
 	# Min radius (0.35) is just my guess
 	self.object_radius = int(range_lerp(object_mass, min_mass, max_mass, DEFAULT_SUN_RADIUS * 0.35, DEFAULT_SUN_RADIUS * 0.7))
-	print("Star subtype M generation not fully implemented")
 
 
 func _generate_star_o() -> void:
@@ -343,7 +333,6 @@ func _generate_star_o() -> void:
 	# Size of stars is dependent on their object_mass (bigger object_mass, bigger star)
 	# Max radius (20) is just my guess
 	self.object_radius = int(range_lerp(object_mass, min_mass, max_mass, DEFAULT_SUN_RADIUS * 3, DEFAULT_SUN_RADIUS * 4))
-	print("Star subtype O generation not fully implemented")
 
 
 func _assign_best_texture_scaled() -> void:

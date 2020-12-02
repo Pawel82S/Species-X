@@ -41,12 +41,9 @@ func set_follow_position(val: Vector2) -> void:
 
 ################################################################# BUILT-IN METHODS #######################################################
 func _physics_process(delta: float) -> void:
-	if _direction != Vector2.ZERO:
-		_mode = Mode.FOLLOW_INPUT
-	
 	match _mode:
 		Mode.FOLLOW_INPUT:
-			position += _direction * MOVE_SPEED * delta
+			position += _direction * MOVE_SPEED * zoom * delta
 		
 		Mode.FOLLOW_OBJECT:
 			global_position = follow_position
@@ -59,13 +56,12 @@ func _unhandled_input(event: InputEvent) -> void:
 				).normalized()
 	if _direction != Vector2.ZERO:
 		_mode = Mode.FOLLOW_INPUT
-	
+
 	if event.is_action("ZoomOut"):
 		zoom -= ZOOM_VEC
 		zoom -= ZOOM_VEC if zoom > ZOOM_VEC * 2 else -ZOOM_VEC
 	elif event.is_action("ZoomIn"):
-		zoom += ZOOM_VEC
-#		zoom += ZOOM_VEC if zoom < MAX_ZOOM else Vector2.ZERO
+		zoom += ZOOM_VEC if zoom < MAX_ZOOM else Vector2.ZERO
 
 
 ################################################################# PUBLIC METHODS #########################################################
